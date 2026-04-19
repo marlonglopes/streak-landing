@@ -64,8 +64,8 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full structure and why 
 
 ## Status
 
-- ✅ **Phase 0** — Foundations (landing, Supabase wiring, schema, middleware)
-- 🚧 **Phase 1** — Auth + Habit CRUD (next)
+- ✅ **Phase 0** — Foundations (landing, Supabase wiring, schema, middleware) — live and verified
+- 🚧 **Phase 1** — Auth + Habit CRUD (in progress)
 - ⏳ **Phase 2** — Retention (stats, reminders)
 - ⏳ **Phase 3** — Monetization (Stripe, streak freezes)
 - ⏳ **Phase 4** — Social (friend challenges)

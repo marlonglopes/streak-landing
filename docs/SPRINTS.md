@@ -27,11 +27,12 @@ Goal: make it possible to build the product.
 - [x] v1 SQL migration: `profiles`, `habits`, `check_ins` + RLS + triggers
 - [x] `.env.example` with Supabase + Stripe placeholders
 
-### Sprint 0.3 — Account setup 🚧 *(user action)*
-- [ ] Supabase project created; URL + anon key pasted into `.env.local`
-- [ ] `0001_init.sql` run in Supabase SQL editor
-- [ ] Email magic-link auth enabled
-- [ ] Vercel project created (optional — can defer until Phase 1 ships)
+### Sprint 0.3 — Account setup ✅
+- [x] Supabase project created; URL + publishable + secret keys in `.env.local`
+- [x] `0001_init.sql` run in Supabase (verified: `profiles`, `habits`, `check_ins` + RLS all live)
+- [x] Dev server smoke-tested: `/` serves, `/app` redirects to `/login?next=/app` via middleware
+- [ ] Email magic-link auth enabled in Supabase dashboard *(configure in Phase 1.1)*
+- [ ] Vercel project created *(deferred until Phase 1 ships)*
 
 ### Deferred from Phase 0 ⏭
 - GitHub Actions CI — revisit at beta.
@@ -40,7 +41,7 @@ Goal: make it possible to build the product.
 
 ---
 
-## Phase 1 — Auth & Habit CRUD ⏳
+## Phase 1 — Auth & Habit CRUD 🚧
 
 Goal: a real user can log in and track habits.
 
