@@ -56,14 +56,19 @@ Goal: a real user can log in and track habits.
 - [x] Live magic-link round-trip: email → click → `/app` signed in; sign-out returns to `/login`
 - [x] Supabase dashboard: redirect URL configured
 
-### Sprint 1.2 — Habits & check-ins
-- [ ] `/app/today` view: list of active habits with one-tap check-in
-- [ ] `/app/habits/new` form (name, emoji, cadence, target days, reminder time)
-- [ ] `/app/habits/[id]/edit` form
-- [ ] Archive / delete actions
-- [ ] Free-tier enforcement: max 3 habits (soft paywall — see Phase 3)
-- [ ] Streak calculation utility in `lib/streaks.ts`
-- [ ] **Tests for streak math** — DST transitions, timezone changes, gaps, partial weeks (target: 100% coverage on this module)
+### Sprint 1.2 — Habits & check-ins ✅
+- [x] `/app` Today view: list of active habits with one-tap check-in
+- [x] `/app/habits/new` form (name, emoji, cadence, target days, reminder time)
+- [x] `/app/habits/[id]/edit` form
+- [x] Archive / delete actions
+- [x] Free-tier enforcement: max 3 active habits (soft paywall — see Phase 3)
+- [x] Streak calculation utility in `lib/streaks.ts` (pure, no I/O)
+- [x] `lib/dates.ts` — timezone-safe date math (UTC arithmetic; Intl for `todayInTimezone`)
+- [x] Vitest wired up (`npm test`, `npm run test:watch`)
+- [x] **Tests for streak math** — 40 tests covering DST transitions, Asia/Kolkata non-whole-hour offsets, weekly targets, gaps, today-not-yet-checked-in edge case, future check-ins, integration scenarios
+- [x] `TimezoneCapture` client component: detects browser tz and updates profile on mismatch
+- [x] Supabase SDK version bump (`@supabase/ssr` 0.5.2 → 0.10.2, `@supabase/supabase-js` → 2.103.3) to align generated type shapes
+- [ ] Live smoke test: create habit → check in → verify streak increments *(user task)*
 
 ---
 

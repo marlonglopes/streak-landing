@@ -34,6 +34,7 @@ export type Database = {
           stripe_subscription_id?: string | null;
           updated_at?: string;
         };
+        Relationships: [];
       };
       habits: {
         Row: {
@@ -69,6 +70,7 @@ export type Database = {
           archived_at?: string | null;
           updated_at?: string;
         };
+        Relationships: [];
       };
       check_ins: {
         Row: {
@@ -89,8 +91,13 @@ export type Database = {
           local_date?: string;
           checked_in_at?: string;
         };
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 };
 
