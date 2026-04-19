@@ -11,7 +11,7 @@ const columns: LinkColumn[] = [
     links: [
       { label: "Features", href: "#features" },
       { label: "Pricing", href: "#pricing" },
-      { label: "Download", href: "#get-streak" },
+      { label: "Get started", href: "/login" },
       { label: "Changelog", href: "#" },
     ],
   },

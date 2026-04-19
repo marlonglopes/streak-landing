@@ -25,17 +25,17 @@ export default function Nav() {
               </a>
             </li>
             <li>
-              <a href="#login" className="hover:text-navy transition-colors">
+              <Link href="/login" className="hover:text-navy transition-colors">
                 Log in
-              </a>
+              </Link>
             </li>
           </ul>
-          <a
-            href="#get-streak"
+          <Link
+            href="/login"
             className="inline-flex items-center rounded-card bg-orange px-4 py-2 text-sm font-semibold text-white shadow-glow hover:bg-orange-dark transition-colors"
           >
             Get Streak
-          </a>
+          </Link>
         </div>
       </nav>
     </header>

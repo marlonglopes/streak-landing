@@ -45,13 +45,20 @@ Goal: make it possible to build the product.
 
 Goal: a real user can log in and track habits.
 
-### Sprint 1.1 — Auth
-- [ ] `/login` page (email magic link input)
-- [ ] `/auth/callback` route (exchanges code for session)
-- [ ] `/app` layout with user-aware header (avatar, sign out)
-- [ ] Sign-out action
-- [ ] Generated TS types from Supabase schema (`supabase gen types`)
-- [ ] End-to-end smoke: signup → profile row exists → redirect to `/app`
+### Sprint 1.1 — Auth 🚧
+- [x] `/login` page (email magic link input)
+- [x] `/auth/callback` route (exchanges code for session)
+- [x] `/app` layout with user-aware header (email, sign out)
+- [x] Sign-out Server Action
+- [x] TypeScript types for Database *(hand-written in `lib/database.types.ts`; swap to `supabase gen types` output when CLI is adopted)*
+- [x] Marketing CTAs (`Nav`, `Hero`, `Pricing`, `Footer`) point to `/login`
+- [x] Build + route-level smoke test: `/`, `/login`, `/app` (redirects), `/auth/callback` (error path) all behave
+- [ ] **Live smoke test** — send a real magic link, click it, confirm session lands on `/app` *(user action — see Phase 1.1 follow-up below)*
+
+### Phase 1.1 follow-up — Supabase dashboard config *(user action)*
+- [ ] **Authentication → URL Configuration → Redirect URLs:** add `http://localhost:3000/auth/callback` (and production URL once deployed)
+- [ ] **Authentication → Providers → Email:** confirm magic-link is enabled (default)
+- [ ] *(Optional)* **Authentication → Email Templates → Magic Link:** customize copy to sound like Streak
 
 ### Sprint 1.2 — Habits & check-ins
 - [ ] `/app/today` view: list of active habits with one-tap check-in

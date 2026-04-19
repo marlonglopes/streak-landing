@@ -1,3 +1,4 @@
+import Link from "next/link";
 import PhoneMockup from "./PhoneMockup";
 
 export default function Hero() {
@@ -20,12 +21,12 @@ export default function Hero() {
               tiny routines compound into who you want to become.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3">
-              <a
-                href="#get-streak"
+              <Link
+                href="/login"
                 className="inline-flex w-full sm:w-auto items-center justify-center rounded-card bg-orange px-6 py-3.5 text-base font-semibold text-white shadow-glow hover:bg-orange-dark transition-colors"
               >
                 Start free — no card needed
-              </a>
+              </Link>
               <a
                 href="#features"
                 className="inline-flex w-full sm:w-auto items-center justify-center rounded-card border border-navy/15 bg-transparent px-6 py-3.5 text-base font-semibold text-navy hover:bg-navy/5 transition-colors"

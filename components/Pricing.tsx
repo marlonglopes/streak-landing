@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Check } from "lucide-react";
 
 type Tier = {
@@ -109,8 +110,8 @@ export default function Pricing() {
                 ))}
               </ul>
 
-              <a
-                href="#get-streak"
+              <Link
+                href="/login"
                 className={`mt-8 inline-flex items-center justify-center rounded-card px-6 py-3 text-base font-semibold transition-colors ${
                   tier.highlight
                     ? "bg-orange text-white hover:bg-orange-dark shadow-glow"
@@ -118,7 +119,7 @@ export default function Pricing() {
                 }`}
               >
                 {tier.ctaLabel}
-              </a>
+              </Link>
             </div>
           ))}
         </div>
