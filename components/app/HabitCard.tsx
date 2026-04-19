@@ -22,7 +22,7 @@ export default function HabitCard({ habit, stats, isTargetToday }: Props) {
 
       <div className="min-w-0 flex-1">
         <Link
-          href={`/app/habits/${habit.id}/edit`}
+          href={`/app/habits/${habit.id}`}
           className="block truncate font-display text-lg font-bold text-navy hover:text-orange-dark"
         >
           {habit.name}

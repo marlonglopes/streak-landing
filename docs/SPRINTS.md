@@ -76,12 +76,13 @@ Goal: a real user can log in and track habits.
 
 Goal: users come back tomorrow.
 
-### Sprint 2.1 — Stats & history
-- [ ] `/app/habits/[id]` detail view
-- [ ] Calendar heatmap (GitHub-style) per habit
-- [ ] Current streak + longest streak surfaces
-- [ ] Weekly and monthly completion rates
-- [ ] Empty states for brand-new habits
+### Sprint 2.1 — Stats & history ✅
+- [x] `/app/habits/[id]` detail view (back nav, check-in + settings buttons, targetDays summary)
+- [x] Calendar heatmap (GitHub-style) per habit — 26 weeks, month labels, rest/missed/done legend
+- [x] Current streak + longest streak + 7-day rate + 30-day rate in stats cards
+- [x] `lib/stats.ts` — `completionRate`, `weeklyCompletionRate`, `monthlyCompletionRate`, `buildHeatmap` (pure; 16 tests)
+- [x] HabitCard now links to `/app/habits/[id]` instead of the edit page; edit reachable via the ⚙ button
+- [x] Empty state on heatmap for habits with zero check-ins
 
 ### Sprint 2.2 — Reminders (email MVP)
 - [ ] Resend account + domain verification
