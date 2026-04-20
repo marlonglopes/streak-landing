@@ -84,21 +84,21 @@ Goal: users come back tomorrow.
 - [x] HabitCard now links to `/app/habits/[id]` instead of the edit page; edit reachable via the ⚙ button
 - [x] Empty state on heatmap for habits with zero check-ins
 
-### Sprint 2.2 — Localization (en + pt-BR)
+### Sprint 2.2 — Localization (en + pt-BR) ✅
 
 **Why now, not in Phase 6:** real Brazilian users are already on the app (see `memory/project_brazilian_users.md`). Shipping i18n before reminder emails means templates are bilingual from day one instead of a rewrite. String surface is still small — delay makes it worse.
 
-- [ ] Install `next-intl` (App Router–native, server + client component support)
-- [ ] Migration `0002_locale.sql`: add `locale text not null default 'en' check (locale in ('en','pt-BR'))` to `profiles`
-- [ ] First-visit detection: read browser `Accept-Language` on the server; if pt-BR-ish and profile still `en` by default, write pt-BR once (mirrors the TimezoneCapture pattern)
-- [ ] `locales/en.json` + `locales/pt-BR.json` — ICU format
-- [ ] Replace hardcoded English strings in: `Nav`, `Hero`, `Features`, `Pricing`, `Footer`, `Wordmark` tagline, `/login`, `/app` layout + header, `EmptyState`, `HabitForm`, `HabitCard`, `HabitStats`, `HabitHeatmap` legend, `/app/habits/new`, `/app/habits/[id]`, `/app/habits/[id]/edit`, error messages in Server Actions (habits.ts)
-- [ ] Replace hardcoded `DAY_LABELS` / `MONTHS` arrays with `Intl.DateTimeFormat(locale, ...)` — `HabitForm`, `HabitHeatmap`, detail-page target-days summary
-- [ ] Localize the date shown on Today (`Today · 2026-04-19` → `Hoje · 19 de abril de 2026` for pt-BR)
-- [ ] Language switcher in the app header + on marketing pages (writes `profiles.locale` for signed-in users, cookie for anon)
+- [x] Install `next-intl` (App Router–native, server + client component support)
+- [x] Migration `0002_locale.sql`: add `locale text not null default 'en' check (locale in ('en','pt-BR'))` to `profiles`
+- [x] Locale resolution at request boundary: `profiles.locale` → `NEXT_LOCALE` cookie → `Accept-Language` → `en` (see `lib/i18n/request.ts`)
+- [x] `locales/en.json` + `locales/pt-BR.json` — ICU format (plurals + selects)
+- [x] Replace hardcoded English strings in: `Nav`, `Hero`, `Features`, `Pricing`, `Footer`, `PhoneMockup`, `/login`, `/app` layout + header, `EmptyState`, `HabitForm`, `HabitCard`, `CheckInButton`, `HabitStats`, `HabitHeatmap` legend, `/app/habits/new`, `/app/habits/[id]`, `/app/habits/[id]/edit`, error messages in Server Actions (`habits.ts`, `auth.ts`)
+- [x] Replace hardcoded `DAY_LABELS` / `MONTHS` arrays with `Intl.DateTimeFormat(locale, ...)` — `HabitForm`, `HabitHeatmap`, detail-page target-days summary
+- [x] Localize the date shown on Today (`Today · 2026-04-19` → `Hoje · 19 de abril de 2026` for pt-BR)
+- [x] `LocaleSwitcher` component + `setLocale` Server Action (writes `profiles.locale` for signed-in users, `NEXT_LOCALE` cookie for anon). Wired into app shell and marketing nav.
 - [ ] User (native pt-BR speaker) reviews and rewrites machine-translated pt-BR strings before merge
-- [ ] Update `docs/PLAYBOOK.md` §6: add a locale smoke test (switch to pt-BR, verify every surface translates, weekday/month names switch, date format changes)
-- [ ] Add non-goals: no URL-based locale routing (`/en/app` vs `/pt-BR/app`); no auto-translate at build — every string is hand-translated
+- [x] Update `docs/PLAYBOOK.md` §6: locale smoke test (6.9)
+- [x] Non-goals locked in: no URL-based locale routing (`/en/app` vs `/pt-BR/app`); no auto-translate at build — every string is hand-translated
 
 ### Sprint 2.3 — Reminders (email MVP, bilingual)
 - [ ] Mailchimp Transactional (Mandrill) account wired — API key in `.env.local` *(user task; see `memory/project_mailchimp.md`)*

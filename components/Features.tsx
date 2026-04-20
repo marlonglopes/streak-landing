@@ -1,51 +1,37 @@
 import { CalendarCheck, Snowflake, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
-type Feature = {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-};
+const featureKeys = [
+  { key: "dailyCheckIns", icon: CalendarCheck },
+  { key: "streakFreezes", icon: Snowflake },
+  { key: "friendChallenges", icon: Users },
+] as const;
 
-const features: Feature[] = [
-  {
-    icon: CalendarCheck,
-    title: "Daily check-ins",
-    description:
-      "One tap is all it takes to log a habit. No journaling, no novellas — just the quick, satisfying click that keeps your day on track.",
-  },
-  {
-    icon: Snowflake,
-    title: "Streak freezes",
-    description:
-      "Life happens. Earn freezes by staying consistent, then spend them to protect your chain on the days that try to knock you off course.",
-  },
-  {
-    icon: Users,
-    title: "Friend challenges",
-    description:
-      "Invite a friend, pick a habit, and race side by side. Shared accountability turns solo willpower into a game you'll actually show up for.",
-  },
-];
+export default async function Features() {
+  const t = await getTranslations("features");
+  const items: { icon: LucideIcon; title: string; description: string }[] =
+    featureKeys.map(({ key, icon }) => ({
+      icon,
+      title: t(`${key}.title`),
+      description: t(`${key}.description`),
+    }));
 
-export default function Features() {
   return (
     <section id="features" className="py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
         <div className="max-w-2xl">
           <span className="text-xs font-semibold uppercase tracking-wider text-orange">
-            Why Streak
+            {t("eyebrow")}
           </span>
           <h2 className="mt-3 font-display text-4xl font-bold leading-tight text-navy sm:text-5xl">
-            The tools that turn intentions into routines.
+            {t("heading")}
           </h2>
-          <p className="mt-4 text-lg text-navy/70">
-            Everything you need to keep showing up — and nothing you don't.
-          </p>
+          <p className="mt-4 text-lg text-navy/70">{t("subhead")}</p>
         </div>
 
         <div className="mt-12 md:mt-16 grid gap-6 md:grid-cols-3">
-          {features.map(({ icon: Icon, title, description }) => (
+          {items.map(({ icon: Icon, title, description }) => (
             <article
               key={title}
               className="rounded-card bg-white p-8 shadow-soft hover:shadow-soft-lg transition-shadow"

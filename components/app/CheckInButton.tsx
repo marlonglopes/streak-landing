@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { toggleCheckIn } from "@/app/actions/habits";
 
 type Props = {
@@ -7,17 +8,18 @@ type Props = {
   isTargetToday: boolean;
 };
 
-export default function CheckInButton({
+export default async function CheckInButton({
   habitId,
   isDoneToday,
   isTargetToday,
 }: Props) {
+  const t = await getTranslations("habitCard");
+
   if (!isTargetToday) {
     return (
       <div
         className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-dashed border-navy/20 text-xs font-medium text-navy/40"
-        title="Not a target day for this habit"
-        aria-label="Not a target day"
+        aria-label={t("notTargetDay")}
       >
         —
       </div>
@@ -29,7 +31,7 @@ export default function CheckInButton({
       <input type="hidden" name="habit_id" value={habitId} />
       <button
         type="submit"
-        aria-label={isDoneToday ? "Undo check-in" : "Check in for today"}
+        aria-label={isDoneToday ? t("undoCheckIn") : t("checkIn")}
         aria-pressed={isDoneToday}
         className={
           isDoneToday

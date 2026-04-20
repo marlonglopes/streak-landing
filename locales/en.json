@@ -1,0 +1,211 @@
+{
+  "meta": {
+    "title": "Streak — Build habits that actually stick",
+    "description": "Streak is the warm, friendly habit tracker that turns small daily wins into lasting routines. Track habits, protect your streaks, and challenge friends."
+  },
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "login": "Log in",
+    "cta": "Get Streak",
+    "homeAria": "Streak home"
+  },
+  "hero": {
+    "badge": "New · Streak freezes",
+    "headlineLine1": "Build habits",
+    "headlineLine2": "that actually stick.",
+    "subhead": "Streak turns the messy work of changing your life into small, daily wins. Check in once a day, keep the chain alive, and watch tiny routines compound into who you want to become.",
+    "primaryCta": "Start free — no card needed",
+    "secondaryCta": "See how it works",
+    "socialProof": "Loved by 40,000+ people building better mornings, workouts, and reading habits."
+  },
+  "features": {
+    "eyebrow": "Why Streak",
+    "heading": "The tools that turn intentions into routines.",
+    "subhead": "Everything you need to keep showing up — and nothing you don't.",
+    "dailyCheckIns": {
+      "title": "Daily check-ins",
+      "description": "One tap is all it takes to log a habit. No journaling, no novellas — just the quick, satisfying click that keeps your day on track."
+    },
+    "streakFreezes": {
+      "title": "Streak freezes",
+      "description": "Life happens. Earn freezes by staying consistent, then spend them to protect your chain on the days that try to knock you off course."
+    },
+    "friendChallenges": {
+      "title": "Friend challenges",
+      "description": "Invite a friend, pick a habit, and race side by side. Shared accountability turns solo willpower into a game you'll actually show up for."
+    }
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "heading": "Simple pricing. Serious results.",
+    "subhead": "Start free. Upgrade when you're ready to go all in.",
+    "mostPopular": "Most popular",
+    "free": {
+      "name": "Free",
+      "price": "$0",
+      "cadence": "forever",
+      "tagline": "For trying out the habit you've been putting off.",
+      "cta": "Start free",
+      "features": [
+        "Track up to 3 habits",
+        "Daily check-ins and streaks",
+        "Basic weekly stats",
+        "Works offline"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "$4",
+      "cadence": "per month",
+      "tagline": "For the long haul — and the life you're actually building.",
+      "cta": "Go Pro",
+      "features": [
+        "Unlimited habits",
+        "Streak freezes to protect bad days",
+        "Friend challenges and leaderboards",
+        "Full history export (CSV)",
+        "Detailed trends and insights"
+      ]
+    }
+  },
+  "footer": {
+    "tagline": "Small habits, big change. One day at a time.",
+    "columns": {
+      "product": "Product",
+      "company": "Company",
+      "legal": "Legal"
+    },
+    "links": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "getStarted": "Get started",
+      "changelog": "Changelog",
+      "about": "About",
+      "blog": "Blog",
+      "careers": "Careers",
+      "contact": "Contact",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "security": "Security",
+      "cookies": "Cookies"
+    },
+    "copyright": "© {year} Streak Labs. All rights reserved.",
+    "madeFor": "Made for people who show up."
+  },
+  "phoneMockup": {
+    "today": "Today",
+    "greeting": "Good morning, Alex",
+    "streakCount": "42",
+    "morningRun": "Morning run",
+    "morningRunTime": "7:00 AM",
+    "readPages": "Read 20 pages",
+    "readPagesTime": "9:30 PM",
+    "meditate": "Meditate",
+    "meditateTime": "8:00 AM",
+    "weeklyProgress": "Weekly progress",
+    "checkInsCount": "18 of 21 check-ins"
+  },
+  "login": {
+    "signIn": "Sign in to Streak",
+    "prompt": "Enter your email and we'll send you a magic link. No password needed.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "sendMagicLink": "Send magic link",
+    "terms": "By continuing you agree to our Terms and Privacy.",
+    "checkEmail": "Check your email",
+    "linkSentTo": "We sent a magic link to {email}. Tap the link and you're in.",
+    "linkSentNoEmail": "We sent a magic link. Tap the link and you're in.",
+    "useDifferent": "Use a different email",
+    "errors": {
+      "emailRequired": "Email is required"
+    }
+  },
+  "appShell": {
+    "signOut": "Sign out"
+  },
+  "today": {
+    "eyebrow": "Today · {date}",
+    "heading": "Don't break the chain.",
+    "newHabit": "New habit",
+    "freeLimit": "You're at the free-plan limit (3 habits). Pro is coming soon."
+  },
+  "emptyState": {
+    "title": "Start your first streak",
+    "body": "Pick one habit. One tap a day. Don't break the chain. Free plan tracks up to three habits.",
+    "cta": "Create a habit"
+  },
+  "habitCard": {
+    "streakDays": "{count, plural, one {# day} other {# days}}",
+    "best": "best {count}",
+    "restDay": "rest day",
+    "notTargetDay": "Not a target day",
+    "checkIn": "Check in for today",
+    "undoCheckIn": "Undo check-in"
+  },
+  "habitForm": {
+    "nameLabel": "Name",
+    "namePlaceholder": "Morning run",
+    "emojiLabel": "Emoji",
+    "cadenceLegend": "Cadence",
+    "cadenceDaily": "Daily",
+    "cadenceWeekly": "Weekly",
+    "targetDaysLegend": "Target days",
+    "reminderLabel": "Reminder time",
+    "reminderOptional": "(optional)",
+    "reminderHint": "Reminder emails ship in Sprint 2.3.",
+    "cancel": "Cancel",
+    "save": "Save habit",
+    "create": "Create habit",
+    "saveChanges": "Save changes",
+    "archive": "Archive",
+    "delete": "Delete"
+  },
+  "newHabit": {
+    "heading": "New habit",
+    "subhead": "One habit is plenty to start. You can always add more."
+  },
+  "editHabit": {
+    "heading": "Edit habit",
+    "subhead": "Archiving hides a habit from Today but keeps its history. Deleting wipes check-ins too."
+  },
+  "habitDetail": {
+    "back": "Today",
+    "editAria": "Edit habit",
+    "cadence": {
+      "daily": "Daily",
+      "weekly": "Weekly"
+    },
+    "everyDay": "Every day",
+    "lastWeeks": "Last {count} weeks",
+    "totalCheckIns": "{count, plural, one {# total check-in} other {# total check-ins}}"
+  },
+  "habitStats": {
+    "current": "Current",
+    "longest": "Longest",
+    "weeklyRate": "7-day rate",
+    "monthlyRate": "30-day rate",
+    "lastWeek": "last week",
+    "lastMonth": "last month",
+    "days": "{count, plural, one {day} other {days}}"
+  },
+  "heatmap": {
+    "missed": "missed",
+    "rest": "rest",
+    "done": "done",
+    "noHistory": "No check-ins yet. Each square fills when you check in.",
+    "cellChecked": "{date}{today, select, yes { (today)} other {}} — ✓ checked in",
+    "cellRest": "{date}{today, select, yes { (today)} other {}} — rest day",
+    "cellMissed": "{date}{today, select, yes { (today)} other {}} — missed"
+  },
+  "errors": {
+    "nameLength": "Name must be 1–100 characters.",
+    "targetDayRequired": "Pick at least one target day.",
+    "freeTierLimit": "Free plan is limited to {limit} active habits. Upgrade to Pro for unlimited."
+  },
+  "localeSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "pt-BR": "Português (BR)"
+  }
+}

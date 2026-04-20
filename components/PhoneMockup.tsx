@@ -1,18 +1,20 @@
 import { Flame, Check } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
-type Habit = {
-  name: string;
-  time: string;
-  done: boolean;
-};
+const habitKeys = [
+  { nameKey: "morningRun", timeKey: "morningRunTime", done: true },
+  { nameKey: "readPages", timeKey: "readPagesTime", done: true },
+  { nameKey: "meditate", timeKey: "meditateTime", done: false },
+] as const;
 
-const habits: Habit[] = [
-  { name: "Morning run", time: "7:00 AM", done: true },
-  { name: "Read 20 pages", time: "9:30 PM", done: true },
-  { name: "Meditate", time: "8:00 AM", done: false },
-];
+export default async function PhoneMockup() {
+  const t = await getTranslations("phoneMockup");
+  const habits = habitKeys.map((h) => ({
+    name: t(h.nameKey),
+    time: t(h.timeKey),
+    done: h.done,
+  }));
 
-export default function PhoneMockup() {
   return (
     <div
       aria-hidden="true"
@@ -30,10 +32,10 @@ export default function PhoneMockup() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[11px] font-medium uppercase tracking-wider text-navy/50">
-                  Today
+                  {t("today")}
                 </p>
                 <h3 className="font-display text-xl font-bold text-navy">
-                  Good morning, Alex
+                  {t("greeting")}
                 </h3>
               </div>
               <div className="flex items-center gap-1.5 rounded-full bg-orange/10 px-3 py-1.5">
@@ -42,7 +44,9 @@ export default function PhoneMockup() {
                   strokeWidth={2.5}
                   aria-hidden="true"
                 />
-                <span className="text-sm font-bold text-orange">42</span>
+                <span className="text-sm font-bold text-orange">
+                  {t("streakCount")}
+                </span>
               </div>
             </div>
 
@@ -85,10 +89,10 @@ export default function PhoneMockup() {
 
             <div className="mt-5 rounded-card bg-navy px-4 py-3 text-center">
               <p className="text-[11px] font-medium uppercase tracking-wider text-white/60">
-                Weekly progress
+                {t("weeklyProgress")}
               </p>
               <p className="mt-0.5 font-display text-lg font-bold text-white">
-                18 of 21 check-ins
+                {t("checkInsCount")}
               </p>
             </div>
           </div>

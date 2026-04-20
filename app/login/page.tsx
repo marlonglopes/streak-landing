@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import Wordmark from "@/components/Wordmark";
 import { signInWithOtp } from "@/app/actions/auth";
 
@@ -11,16 +12,18 @@ type Props = {
   };
 };
 
-export default function LoginPage({ searchParams }: Props) {
+export default async function LoginPage({ searchParams }: Props) {
   const sent = searchParams.sent === "1";
   const next = searchParams.next ?? "/app";
+  const t = await getTranslations("login");
+  const tNav = await getTranslations("nav");
 
   return (
     <main className="min-h-screen flex items-center justify-center px-6 py-16">
       <div className="w-full max-w-md">
         <Link
           href="/"
-          aria-label="Streak home"
+          aria-label={tNav("homeAria")}
           className="flex justify-center"
         >
           <Wordmark />
@@ -34,34 +37,31 @@ export default function LoginPage({ searchParams }: Props) {
           )}
         </div>
 
-        <p className="mt-6 text-center text-sm text-navy/50">
-          By continuing you agree to our Terms and Privacy.
-        </p>
+        <p className="mt-6 text-center text-sm text-navy/50">{t("terms")}</p>
       </div>
     </main>
   );
 }
 
-function SignInForm({ error, next }: { error?: string; next: string }) {
+async function SignInForm({ error, next }: { error?: string; next: string }) {
+  const t = await getTranslations("login");
   return (
     <>
       <h1 className="font-display text-3xl font-bold text-navy">
-        Sign in to Streak
+        {t("signIn")}
       </h1>
-      <p className="mt-2 text-navy/70">
-        Enter your email and we&apos;ll send you a magic link. No password needed.
-      </p>
+      <p className="mt-2 text-navy/70">{t("prompt")}</p>
 
       <form action={signInWithOtp} className="mt-6 space-y-4">
         <input type="hidden" name="next" value={next} />
         <label className="block">
-          <span className="sr-only">Email address</span>
+          <span className="sr-only">{t("emailLabel")}</span>
           <input
             name="email"
             type="email"
             autoComplete="email"
             required
-            placeholder="you@example.com"
+            placeholder={t("emailPlaceholder")}
             className="w-full rounded-card border border-navy/15 bg-white px-4 py-3 text-base text-navy placeholder:text-navy/40 focus:outline-none focus:border-orange focus:ring-2 focus:ring-orange/20"
           />
         </label>
@@ -69,7 +69,7 @@ function SignInForm({ error, next }: { error?: string; next: string }) {
           type="submit"
           className="w-full inline-flex items-center justify-center rounded-card bg-orange px-6 py-3 text-base font-semibold text-white shadow-glow hover:bg-orange-dark transition-colors"
         >
-          Send magic link
+          {t("sendMagicLink")}
         </button>
         {error && (
           <p className="text-sm text-red-600" role="alert">
@@ -81,7 +81,8 @@ function SignInForm({ error, next }: { error?: string; next: string }) {
   );
 }
 
-function SentState({ email }: { email?: string }) {
+async function SentState({ email }: { email?: string }) {
+  const t = await getTranslations("login");
   return (
     <div className="text-center">
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange/10">
@@ -90,18 +91,16 @@ function SentState({ email }: { email?: string }) {
         </span>
       </div>
       <h1 className="mt-4 font-display text-3xl font-bold text-navy">
-        Check your email
+        {t("checkEmail")}
       </h1>
       <p className="mt-3 text-navy/70">
-        We sent a magic link{email ? ` to ` : "."}
-        {email && <span className="font-semibold text-navy">{email}</span>}
-        {email && "."} Tap the link and you&apos;re in.
+        {email ? t("linkSentTo", { email }) : t("linkSentNoEmail")}
       </p>
       <Link
         href="/login"
         className="mt-6 inline-block text-sm font-medium text-orange hover:text-orange-dark"
       >
-        Use a different email
+        {t("useDifferent")}
       </Link>
     </div>
   );

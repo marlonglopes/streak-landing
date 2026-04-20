@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { todayInTimezone } from "@/lib/dates";
 
@@ -26,13 +27,15 @@ function parseTargetDays(formData: FormData): number[] {
   return Array.from(new Set(days)).sort((a, b) => a - b);
 }
 
+type ValidationErrorKey = "nameLength" | "targetDayRequired";
+
 function validateHabitForm(formData: FormData): {
   name: string;
   emoji: string | null;
   cadence: "daily" | "weekly";
   target_days_of_week: number[];
   reminder_time: string | null;
-  error?: string;
+  errorKey?: ValidationErrorKey;
 } {
   const name = String(formData.get("name") ?? "").trim();
   const emojiRaw = String(formData.get("emoji") ?? "").trim();
@@ -48,11 +51,11 @@ function validateHabitForm(formData: FormData): {
       ? `${reminderRaw}:00`
       : null;
 
-  let error: string | undefined;
+  let errorKey: ValidationErrorKey | undefined;
   if (name.length < 1 || name.length > 100) {
-    error = "Name must be 1–100 characters.";
+    errorKey = "nameLength";
   } else if (target_days_of_week.length === 0) {
-    error = "Pick at least one target day.";
+    errorKey = "targetDayRequired";
   }
 
   return {
@@ -61,19 +64,21 @@ function validateHabitForm(formData: FormData): {
     cadence,
     target_days_of_week,
     reminder_time,
-    error,
+    errorKey,
   };
 }
 
 export async function createHabit(formData: FormData) {
   const { supabase, user } = await requireUser();
   const parsed = validateHabitForm(formData);
+  const t = await getTranslations("errors");
 
-  if (parsed.error) {
-    redirect(`/app/habits/new?error=${encodeURIComponent(parsed.error)}`);
+  if (parsed.errorKey) {
+    redirect(
+      `/app/habits/new?error=${encodeURIComponent(t(parsed.errorKey))}`,
+    );
   }
 
-  // Free-tier guard: count active habits only.
   const { count, error: countError } = await supabase
     .from("habits")
     .select("id", { count: "exact", head: true })
@@ -94,7 +99,7 @@ export async function createHabit(formData: FormData) {
   if (tier === "free" && (count ?? 0) >= FREE_TIER_HABIT_LIMIT) {
     redirect(
       `/app/habits/new?error=${encodeURIComponent(
-        `Free plan is limited to ${FREE_TIER_HABIT_LIMIT} active habits. Upgrade to Pro for unlimited.`,
+        t("freeTierLimit", { limit: FREE_TIER_HABIT_LIMIT }),
       )}`,
     );
   }
@@ -119,10 +124,13 @@ export async function createHabit(formData: FormData) {
 export async function updateHabit(habitId: string, formData: FormData) {
   const { supabase } = await requireUser();
   const parsed = validateHabitForm(formData);
+  const t = await getTranslations("errors");
 
-  if (parsed.error) {
+  if (parsed.errorKey) {
     redirect(
-      `/app/habits/${habitId}/edit?error=${encodeURIComponent(parsed.error)}`,
+      `/app/habits/${habitId}/edit?error=${encodeURIComponent(
+        t(parsed.errorKey),
+      )}`,
     );
   }
 

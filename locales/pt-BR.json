@@ -1,0 +1,211 @@
+{
+  "meta": {
+    "title": "Streak — Crie hábitos que realmente pegam",
+    "description": "O Streak é o rastreador de hábitos simpático que transforma pequenas vitórias diárias em rotinas duradouras. Acompanhe hábitos, proteja sua sequência e desafie amigos."
+  },
+  "nav": {
+    "features": "Recursos",
+    "pricing": "Preços",
+    "login": "Entrar",
+    "cta": "Baixar Streak",
+    "homeAria": "Início do Streak"
+  },
+  "hero": {
+    "badge": "Novo · Protetores de sequência",
+    "headlineLine1": "Crie hábitos",
+    "headlineLine2": "que realmente pegam.",
+    "subhead": "O Streak transforma o trabalho confuso de mudar de vida em pequenas vitórias diárias. Marque uma vez por dia, mantenha a corrente viva e veja rotinas pequenas virarem quem você quer ser.",
+    "primaryCta": "Começar grátis — sem cartão",
+    "secondaryCta": "Ver como funciona",
+    "socialProof": "Amado por mais de 40.000 pessoas construindo manhãs, treinos e leituras melhores."
+  },
+  "features": {
+    "eyebrow": "Por que o Streak",
+    "heading": "As ferramentas que transformam intenção em rotina.",
+    "subhead": "Tudo que você precisa para continuar aparecendo — e nada que você não precisa.",
+    "dailyCheckIns": {
+      "title": "Check-ins diários",
+      "description": "Um toque é tudo que precisa para marcar um hábito. Sem diário, sem romance — só o clique rápido e gostoso que mantém seu dia no trilho."
+    },
+    "streakFreezes": {
+      "title": "Protetores de sequência",
+      "description": "A vida acontece. Ganhe protetores sendo consistente e use-os para blindar sua corrente nos dias que tentam te derrubar."
+    },
+    "friendChallenges": {
+      "title": "Desafios com amigos",
+      "description": "Convide um amigo, escolha um hábito e corram lado a lado. Responsabilidade compartilhada vira um jogo que você vai querer jogar."
+    }
+  },
+  "pricing": {
+    "eyebrow": "Preços",
+    "heading": "Preço simples. Resultado sério.",
+    "subhead": "Comece grátis. Faça upgrade quando estiver pronto para ir com tudo.",
+    "mostPopular": "Mais popular",
+    "free": {
+      "name": "Grátis",
+      "price": "R$0",
+      "cadence": "para sempre",
+      "tagline": "Para experimentar aquele hábito que você anda adiando.",
+      "cta": "Começar grátis",
+      "features": [
+        "Até 3 hábitos",
+        "Check-ins diários e sequências",
+        "Estatísticas semanais básicas",
+        "Funciona offline"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "R$19",
+      "cadence": "por mês",
+      "tagline": "Para a longa jornada — e para a vida que você está construindo.",
+      "cta": "Assinar o Pro",
+      "features": [
+        "Hábitos ilimitados",
+        "Protetores de sequência para os dias ruins",
+        "Desafios com amigos e rankings",
+        "Exportação completa do histórico (CSV)",
+        "Tendências e insights detalhados"
+      ]
+    }
+  },
+  "footer": {
+    "tagline": "Pequenos hábitos, grande mudança. Um dia de cada vez.",
+    "columns": {
+      "product": "Produto",
+      "company": "Empresa",
+      "legal": "Legal"
+    },
+    "links": {
+      "features": "Recursos",
+      "pricing": "Preços",
+      "getStarted": "Começar",
+      "changelog": "Novidades",
+      "about": "Sobre",
+      "blog": "Blog",
+      "careers": "Carreiras",
+      "contact": "Contato",
+      "privacy": "Privacidade",
+      "terms": "Termos",
+      "security": "Segurança",
+      "cookies": "Cookies"
+    },
+    "copyright": "© {year} Streak Labs. Todos os direitos reservados.",
+    "madeFor": "Feito para quem aparece todos os dias."
+  },
+  "phoneMockup": {
+    "today": "Hoje",
+    "greeting": "Bom dia, Alex",
+    "streakCount": "42",
+    "morningRun": "Corrida matinal",
+    "morningRunTime": "07:00",
+    "readPages": "Ler 20 páginas",
+    "readPagesTime": "21:30",
+    "meditate": "Meditar",
+    "meditateTime": "08:00",
+    "weeklyProgress": "Progresso da semana",
+    "checkInsCount": "18 de 21 check-ins"
+  },
+  "login": {
+    "signIn": "Entrar no Streak",
+    "prompt": "Digite seu e-mail e enviaremos um link mágico. Sem senha.",
+    "emailLabel": "E-mail",
+    "emailPlaceholder": "voce@exemplo.com",
+    "sendMagicLink": "Enviar link mágico",
+    "terms": "Ao continuar você concorda com nossos Termos e Privacidade.",
+    "checkEmail": "Confira seu e-mail",
+    "linkSentTo": "Enviamos um link mágico para {email}. Toque no link e pronto.",
+    "linkSentNoEmail": "Enviamos um link mágico. Toque no link e pronto.",
+    "useDifferent": "Usar outro e-mail",
+    "errors": {
+      "emailRequired": "E-mail é obrigatório"
+    }
+  },
+  "appShell": {
+    "signOut": "Sair"
+  },
+  "today": {
+    "eyebrow": "Hoje · {date}",
+    "heading": "Não quebre a corrente.",
+    "newHabit": "Novo hábito",
+    "freeLimit": "Você atingiu o limite do plano grátis (3 hábitos). O Pro está chegando."
+  },
+  "emptyState": {
+    "title": "Comece sua primeira sequência",
+    "body": "Escolha um hábito. Um toque por dia. Não quebre a corrente. O plano grátis permite até três hábitos.",
+    "cta": "Criar um hábito"
+  },
+  "habitCard": {
+    "streakDays": "{count, plural, one {# dia} other {# dias}}",
+    "best": "recorde {count}",
+    "restDay": "dia de descanso",
+    "notTargetDay": "Não é um dia do hábito",
+    "checkIn": "Marcar check-in de hoje",
+    "undoCheckIn": "Desfazer check-in"
+  },
+  "habitForm": {
+    "nameLabel": "Nome",
+    "namePlaceholder": "Corrida matinal",
+    "emojiLabel": "Emoji",
+    "cadenceLegend": "Frequência",
+    "cadenceDaily": "Diário",
+    "cadenceWeekly": "Semanal",
+    "targetDaysLegend": "Dias do hábito",
+    "reminderLabel": "Horário do lembrete",
+    "reminderOptional": "(opcional)",
+    "reminderHint": "Lembretes por e-mail chegam no Sprint 2.3.",
+    "cancel": "Cancelar",
+    "save": "Salvar hábito",
+    "create": "Criar hábito",
+    "saveChanges": "Salvar alterações",
+    "archive": "Arquivar",
+    "delete": "Excluir"
+  },
+  "newHabit": {
+    "heading": "Novo hábito",
+    "subhead": "Um hábito já é o bastante pra começar. Dá pra adicionar mais depois."
+  },
+  "editHabit": {
+    "heading": "Editar hábito",
+    "subhead": "Arquivar esconde o hábito do Hoje mas mantém o histórico. Excluir apaga tudo, incluindo check-ins."
+  },
+  "habitDetail": {
+    "back": "Hoje",
+    "editAria": "Editar hábito",
+    "cadence": {
+      "daily": "Diário",
+      "weekly": "Semanal"
+    },
+    "everyDay": "Todo dia",
+    "lastWeeks": "Últimas {count} semanas",
+    "totalCheckIns": "{count, plural, one {# check-in no total} other {# check-ins no total}}"
+  },
+  "habitStats": {
+    "current": "Atual",
+    "longest": "Maior",
+    "weeklyRate": "Taxa de 7 dias",
+    "monthlyRate": "Taxa de 30 dias",
+    "lastWeek": "última semana",
+    "lastMonth": "último mês",
+    "days": "{count, plural, one {dia} other {dias}}"
+  },
+  "heatmap": {
+    "missed": "perdido",
+    "rest": "descanso",
+    "done": "feito",
+    "noHistory": "Ainda sem check-ins. Cada quadrado se preenche quando você marca.",
+    "cellChecked": "{date}{today, select, yes { (hoje)} other {}} — ✓ check-in feito",
+    "cellRest": "{date}{today, select, yes { (hoje)} other {}} — dia de descanso",
+    "cellMissed": "{date}{today, select, yes { (hoje)} other {}} — perdido"
+  },
+  "errors": {
+    "nameLength": "O nome deve ter de 1 a 100 caracteres.",
+    "targetDayRequired": "Escolha pelo menos um dia do hábito.",
+    "freeTierLimit": "O plano grátis permite {limit} hábitos ativos. Faça upgrade para o Pro para ter ilimitados."
+  },
+  "localeSwitcher": {
+    "label": "Idioma",
+    "en": "English",
+    "pt-BR": "Português (BR)"
+  }
+}

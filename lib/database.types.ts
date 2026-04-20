@@ -1,6 +1,8 @@
-// Mirrors supabase/migrations/0001_init.sql.
+// Mirrors supabase/migrations/0001_init.sql + 0002_locale.sql.
 // Hand-written for now; swap to `supabase gen types typescript` output once the
 // Supabase CLI is wired up (see docs/MEMORY.md).
+
+import type { Locale } from "./i18n/config";
 
 export type Database = {
   public: {
@@ -10,6 +12,7 @@ export type Database = {
           id: string;
           display_name: string | null;
           timezone: string;
+          locale: Locale;
           subscription_tier: "free" | "pro";
           stripe_customer_id: string | null;
           stripe_subscription_id: string | null;
@@ -20,6 +23,7 @@ export type Database = {
           id: string;
           display_name?: string | null;
           timezone?: string;
+          locale?: Locale;
           subscription_tier?: "free" | "pro";
           stripe_customer_id?: string | null;
           stripe_subscription_id?: string | null;
@@ -29,6 +33,7 @@ export type Database = {
         Update: {
           display_name?: string | null;
           timezone?: string;
+          locale?: Locale;
           subscription_tier?: "free" | "pro";
           stripe_customer_id?: string | null;
           stripe_subscription_id?: string | null;

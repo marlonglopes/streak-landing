@@ -1,4 +1,5 @@
 import { Flame, Trophy, CalendarDays, CalendarRange } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   current: number;
@@ -55,38 +56,39 @@ function Card({
   );
 }
 
-export default function HabitStats({
+export default async function HabitStats({
   current,
   longest,
   weeklyRate,
   monthlyRate,
 }: Props) {
+  const t = await getTranslations("habitStats");
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
       <Card
         icon={<Flame className="h-3.5 w-3.5" strokeWidth={2.5} />}
-        label="Current"
+        label={t("current")}
         value={`${current}`}
-        sublabel={`day${current === 1 ? "" : "s"}`}
+        sublabel={t("days", { count: current })}
         accent={current > 0}
       />
       <Card
         icon={<Trophy className="h-3.5 w-3.5" strokeWidth={2.5} />}
-        label="Longest"
+        label={t("longest")}
         value={`${longest}`}
-        sublabel={`day${longest === 1 ? "" : "s"}`}
+        sublabel={t("days", { count: longest })}
       />
       <Card
         icon={<CalendarDays className="h-3.5 w-3.5" strokeWidth={2.5} />}
-        label="7-day rate"
+        label={t("weeklyRate")}
         value={formatRate(weeklyRate)}
-        sublabel="last week"
+        sublabel={t("lastWeek")}
       />
       <Card
         icon={<CalendarRange className="h-3.5 w-3.5" strokeWidth={2.5} />}
-        label="30-day rate"
+        label={t("monthlyRate")}
         value={formatRate(monthlyRate)}
-        sublabel="last month"
+        sublabel={t("lastMonth")}
       />
     </div>
   );

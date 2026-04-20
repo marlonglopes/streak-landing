@@ -233,6 +233,33 @@ Edge case: if a user moves timezones (laptop travels), `todayInTimezone` uses th
 3. Log in via magic link → after callback, you land at the `next` URL, not `/app`.
 4. Signed in, visit `/login` → redirected to `/app` (middleware prevents double login).
 
+### 6.9 Localization (en / pt-BR)
+
+Precedence: signed-in `profiles.locale` → `NEXT_LOCALE` cookie → `Accept-Language` header → `en`.
+
+**Anonymous (cookie path):**
+
+1. Open an incognito window. Load `/`.
+2. If your browser's `Accept-Language` starts with `pt`, the page renders in Portuguese on first load. Otherwise it renders in English.
+3. Use the language switcher in the nav to flip to **Português (BR)**. Nav, hero, features, pricing, footer, phone mockup — every surface translates in place. URL does not change (we don't use locale-prefixed routes).
+4. DevTools → Application → Cookies → confirm `NEXT_LOCALE=pt-BR` was written with a 1-year max-age.
+5. Close and reopen the tab → page still loads in pt-BR (cookie wins over header).
+
+**Signed in (profile path):**
+
+1. Log in. The app shell has a language switcher next to the sign-out button.
+2. Switch to pt-BR. Supabase → `profiles` → your row → `locale` column now reads `pt-BR`.
+3. Log out. Delete the `NEXT_LOCALE` cookie. Log back in → still pt-BR (the profile overrides cookie/header).
+4. In a fresh incognito window, log into the same account with a browser set to English. The app still loads in pt-BR because the profile is authoritative.
+
+**Things to eyeball:**
+
+- `Today · {date}` eyebrow on `/app` — date is formatted via `Intl.DateTimeFormat`, so pt-BR shows `segunda-feira, 20 de abril` while en shows `Monday, April 20`.
+- Habit form weekday chips (`S M T W T F S` vs. `D S T Q Q S S`).
+- Heatmap month labels and weekday initials on the habit detail page.
+- Plural forms: `1 day` / `2 days` in en; `1 dia` / `2 dias` in pt-BR. Best-streak and total-check-in counts exercise these.
+- Free-tier error: create a 4th habit on the free plan — the error bar should render in the active locale.
+
 ---
 
 ## 7. Streak math — backfilling history via SQL

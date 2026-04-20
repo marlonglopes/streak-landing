@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { dayOfWeek, todayInTimezone } from "@/lib/dates";
 import { computeStreaks } from "@/lib/streaks";
@@ -33,8 +34,6 @@ export default async function TodayPage() {
 
   const habitList = habits ?? [];
 
-  // Pull all check-ins for these habits in one round-trip. Small and simple:
-  // we can optimize to per-habit queries later if a user accumulates years of data.
   const habitIds = habitList.map((h) => h.id);
   const { data: checkIns } = habitIds.length
     ? await supabase
@@ -55,6 +54,14 @@ export default async function TodayPage() {
   const activeCount = habitList.length;
   const approachingFreeLimit = tier === "free" && activeCount >= 3;
 
+  const locale = await getLocale();
+  const t = await getTranslations("today");
+  const dateLabel = new Intl.DateTimeFormat(locale, {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(`${today}T00:00:00`));
+
   return (
     <div className="mx-auto max-w-2xl px-6 py-10 sm:py-14">
       <TimezoneCapture currentTimezone={tz} />
@@ -62,10 +69,10 @@ export default async function TodayPage() {
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-orange">
-            Today · {today}
+            {t("eyebrow", { date: dateLabel })}
           </p>
           <h1 className="mt-2 font-display text-4xl font-bold text-navy sm:text-5xl">
-            Don&apos;t break the chain.
+            {t("heading")}
           </h1>
         </div>
         {activeCount > 0 && !approachingFreeLimit && (
@@ -74,7 +81,7 @@ export default async function TodayPage() {
             className="hidden sm:inline-flex items-center gap-1.5 rounded-card bg-orange px-4 py-2 text-sm font-semibold text-white shadow-soft hover:bg-orange-dark"
           >
             <Plus className="h-4 w-4" strokeWidth={3} />
-            New habit
+            {t("newHabit")}
           </Link>
         )}
       </div>
@@ -109,16 +116,14 @@ export default async function TodayPage() {
       {habitList.length > 0 && (
         <div className="mt-8 flex items-center justify-between gap-4 text-sm">
           {approachingFreeLimit ? (
-            <p className="text-navy/60">
-              You&apos;re at the free-plan limit (3 habits). Pro is coming soon.
-            </p>
+            <p className="text-navy/60">{t("freeLimit")}</p>
           ) : (
             <Link
               href="/app/habits/new"
               className="inline-flex items-center gap-1.5 rounded-card border border-navy/15 bg-white px-4 py-2 font-semibold text-navy/80 hover:bg-navy/5 sm:hidden"
             >
               <Plus className="h-4 w-4" strokeWidth={3} />
-              New habit
+              {t("newHabit")}
             </Link>
           )}
         </div>

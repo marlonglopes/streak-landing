@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 
 export async function signInWithOtp(formData: FormData) {
@@ -9,7 +10,8 @@ export async function signInWithOtp(formData: FormData) {
   const next = String(formData.get("next") ?? "/app");
 
   if (!email) {
-    redirect(`/login?error=${encodeURIComponent("Email is required")}`);
+    const t = await getTranslations("login.errors");
+    redirect(`/login?error=${encodeURIComponent(t("emailRequired"))}`);
   }
 
   const supabase = createClient();

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Fraunces } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,20 +17,28 @@ const fraunces = Fraunces({
   axes: ["SOFT", "opsz"],
 });
 
-export const metadata: Metadata = {
-  title: "Streak — Build habits that actually stick",
-  description:
-    "Streak is the warm, friendly habit tracker that turns small daily wins into lasting routines. Track habits, protect your streaks, and challenge friends.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("meta");
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
   return (
-    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
-      <body className="font-sans bg-cream text-navy">{children}</body>
+    <html lang={locale} className={`${inter.variable} ${fraunces.variable}`}>
+      <body className="font-sans bg-cream text-navy">
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          {children}
+        </NextIntlClientProvider>
+      </body>
     </html>
   );
 }

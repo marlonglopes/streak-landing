@@ -1,65 +1,79 @@
+import { getTranslations } from "next-intl/server";
 import Wordmark from "./Wordmark";
 
+type LinkKey =
+  | "features"
+  | "pricing"
+  | "getStarted"
+  | "changelog"
+  | "about"
+  | "blog"
+  | "careers"
+  | "contact"
+  | "privacy"
+  | "terms"
+  | "security"
+  | "cookies";
+
 type LinkColumn = {
-  heading: string;
-  links: { label: string; href: string }[];
+  columnKey: "product" | "company" | "legal";
+  links: { linkKey: LinkKey; href: string }[];
 };
 
 const columns: LinkColumn[] = [
   {
-    heading: "Product",
+    columnKey: "product",
     links: [
-      { label: "Features", href: "#features" },
-      { label: "Pricing", href: "#pricing" },
-      { label: "Get started", href: "/login" },
-      { label: "Changelog", href: "#" },
+      { linkKey: "features", href: "#features" },
+      { linkKey: "pricing", href: "#pricing" },
+      { linkKey: "getStarted", href: "/login" },
+      { linkKey: "changelog", href: "#" },
     ],
   },
   {
-    heading: "Company",
+    columnKey: "company",
     links: [
-      { label: "About", href: "#" },
-      { label: "Blog", href: "#" },
-      { label: "Careers", href: "#" },
-      { label: "Contact", href: "#" },
+      { linkKey: "about", href: "#" },
+      { linkKey: "blog", href: "#" },
+      { linkKey: "careers", href: "#" },
+      { linkKey: "contact", href: "#" },
     ],
   },
   {
-    heading: "Legal",
+    columnKey: "legal",
     links: [
-      { label: "Privacy", href: "#" },
-      { label: "Terms", href: "#" },
-      { label: "Security", href: "#" },
-      { label: "Cookies", href: "#" },
+      { linkKey: "privacy", href: "#" },
+      { linkKey: "terms", href: "#" },
+      { linkKey: "security", href: "#" },
+      { linkKey: "cookies", href: "#" },
     ],
   },
 ];
 
-export default function Footer() {
+export default async function Footer() {
+  const t = await getTranslations("footer");
   return (
     <footer className="border-t border-navy/10 bg-cream">
       <div className="mx-auto max-w-6xl px-6 py-12 md:py-16">
         <div className="grid gap-10 md:grid-cols-4">
           <div>
             <Wordmark />
-            <p className="mt-4 max-w-xs text-sm text-navy/60">
-              Small habits, big change. One day at a time.
-            </p>
+            <p className="mt-4 max-w-xs text-sm text-navy/60">{t("tagline")}</p>
           </div>
 
           {columns.map((col) => (
-            <div key={col.heading}>
+            <div key={col.columnKey}>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-navy/50">
-                {col.heading}
+                {t(`columns.${col.columnKey}`)}
               </h4>
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((link) => (
-                  <li key={link.label}>
+                  <li key={link.linkKey}>
                     <a
                       href={link.href}
                       className="text-sm text-navy/80 hover:text-orange transition-colors"
                     >
-                      {link.label}
+                      {t(`links.${link.linkKey}`)}
                     </a>
                   </li>
                 ))}
@@ -70,9 +84,9 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t border-navy/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-sm text-navy/50">
-            © {new Date().getFullYear()} Streak Labs. All rights reserved.
+            {t("copyright", { year: new Date().getFullYear() })}
           </p>
-          <p className="text-sm text-navy/50">Made for people who show up.</p>
+          <p className="text-sm text-navy/50">{t("madeFor")}</p>
         </div>
       </div>
     </footer>
