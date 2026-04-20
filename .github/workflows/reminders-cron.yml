@@ -1,0 +1,48 @@
+name: reminders-cron
+
+# Why GitHub Actions and not Vercel Cron? The Vercel Hobby plan caps cron jobs
+# at once-per-day granularity. Reminder dispatch needs 15-minute ticks to
+# respect user-chosen reminder_time + quiet-hours windows across timezones.
+# GitHub Actions gives us free cron down to 5-minute granularity and doesn't
+# count toward Vercel's paid plan.
+#
+# The job just hits the CRON_SECRET-protected /api/cron/reminders endpoint.
+# All dispatch logic (which users, which habits, dry-run guard) lives in the
+# Next.js route handler.
+#
+# Quota: ~96 ticks/day × ~5s each × 30 days ≈ 240 min/month. Free tier for
+# private repos is 2,000 min/month, so we're at ~12% utilization.
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  # Manual trigger from the Actions tab — handy when QA'ing a template or
+  # forcing a fresh dispatch after fixing a bug.
+  workflow_dispatch:
+
+# Only run one tick at a time. If a previous tick is still running (slow
+# Supabase query, Resend retry), skip the next scheduled one rather than
+# doubling up. The idempotency in reminder_sends would catch duplicates
+# anyway, but this keeps the Actions log clean.
+concurrency:
+  group: reminders-cron
+  cancel-in-progress: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Call reminder endpoint
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          CRON_TARGET_URL: ${{ secrets.CRON_TARGET_URL }}
+        run: |
+          if [ -z "$CRON_SECRET" ] || [ -z "$CRON_TARGET_URL" ]; then
+            echo "::error::CRON_SECRET or CRON_TARGET_URL secret missing"
+            exit 1
+          fi
+          # -f fails on non-2xx; -sS keeps output quiet on success and loud on error.
+          curl -fsS -X GET \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$CRON_TARGET_URL"

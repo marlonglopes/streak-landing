@@ -121,7 +121,7 @@ Expected routes:
 | `/app/habits/new`           | New-habit form — auth-gated                                |
 | `/app/habits/[id]/edit`     | Edit / archive / delete — auth-gated                       |
 | `/app/settings`             | Reminder channel + quiet hours — auth-gated                |
-| `/api/cron/reminders`       | Vercel Cron endpoint (auth via `CRON_SECRET` bearer)       |
+| `/api/cron/reminders`       | Cron endpoint triggered by GitHub Actions (auth via `CRON_SECRET` bearer) |
 | `/r/unsub`                  | One-click unsubscribe (HMAC-signed token)                  |
 
 ---

@@ -113,7 +113,7 @@ Goal: users come back tomorrow.
 - [x] `app/api/cron/reminders/route.ts` — CRON_SECRET-protected handler; dispatches one Resend send per eligible habit and records to `reminder_sends`
 - [x] `app/r/unsub/route.ts` — one-click unsubscribe from the email footer (HMAC token, no login required)
 - [x] `/app/settings` page + `ReminderSettings` component — channel picker, quiet-hours, unsubscribe toggle
-- [x] `vercel.json` cron schedule (`*/15 * * * *` to start — coarse enough for Hobby plan)
+- [x] Cron schedule (`*/15 * * * *`) — runs from `.github/workflows/reminders-cron.yml` because Vercel Hobby caps cron at 1×/day. Free-tier safe (~240 min/mo of 2,000 quota).
 - [x] Extend `locales/en.json` + `locales/pt-BR.json` with email subject/body strings + settings UI copy
 - [x] PLAYBOOK §6.10 — reminder smoke test (dry-run cron, verify `reminder_sends` row, eyeball template, unsubscribe round-trip)
 

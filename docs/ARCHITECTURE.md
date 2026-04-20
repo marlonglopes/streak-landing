@@ -139,7 +139,7 @@ Daily reminders are opt-in (default on) and single-channel per user — we pick 
 - `profiles.unsubscribed_at` — one-click unsubscribe timestamp. Non-null means skip the user.
 - `reminder_sends` — idempotency + audit log. UNIQUE `(habit_id, local_date, channel)` ensures a duplicate cron tick can't double-send.
 
-**Dispatch flow** (every 15 minutes via Vercel Cron):
+**Dispatch flow** (every 15 minutes via GitHub Actions — see `.github/workflows/reminders-cron.yml`. Vercel Hobby caps cron at 1×/day, so the schedule lives outside Vercel):
 1. `GET /api/cron/reminders` — auth'd via `Authorization: Bearer $CRON_SECRET`.
 2. Service-role client loads candidate users (`preferred_reminder_channel='email'`, `unsubscribed_at IS NULL`), their active habits, and the last few days of check-ins.
 3. For each `(habit × user)` pair, `decideDispatch()` in [lib/reminders/dispatch.ts](../lib/reminders/dispatch.ts) answers yes/no with a reason (`unsubscribed`, `channel_none`, `already_checked_in`, `not_target_day`, `quiet_hours`, `before_reminder_time`). Pure function — heavily unit tested.
