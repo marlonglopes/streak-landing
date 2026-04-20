@@ -387,6 +387,9 @@ select count(*) from habits;
 | `Node.js 18 and below are deprecated` warnings                     | Old Node                                                      | Upgrade to Node 20 when convenient. Non-blocking.                                            |
 | Check-in circle fills but streak stays at 0                        | Profile timezone missing → `local_date` stored differs from `todayInTimezone` | See [§6.7](#67-timezone-capture). Force a reload so `TimezoneCapture` writes your real zone. |
 | Streak is 1-off from what you expect                               | Almost always a timezone mismatch between your system and `current_date` in SQL | Use explicit dates in backfills instead of `current_date`.                                    |
+| `Port 3000 is in use, trying 3001 instead`                         | A previous `npm run dev` is still running                     | `lsof -i :3000` → `kill <pid>`, then restart. Don't leave both tabs open — Server Actions target the URL the bundle was served from. |
+| LocaleSwitcher (or any Server Action) throws `Failed to fetch` in the browser | Stale client bundle from a previous dev server pointing at action IDs the new server doesn't know | Close every tab, kill any lingering dev servers, start one, hard-reload (Cmd/Ctrl+Shift+R). If it still fails, check the `npm run dev` terminal for the real server error (most often migration `0002_locale.sql` hasn't been applied). |
+| Locale switch writes the cookie but `profiles.locale` never updates | Migration `0002_locale.sql` hasn't been applied — the column doesn't exist | Run `supabase/migrations/0002_locale.sql` in the Supabase SQL Editor. Existing profiles backfill to `'en'` via the column default. |
 
 ---
 
