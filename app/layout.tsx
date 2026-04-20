@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Inter, Fraunces } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
+import PostHogProvider from "@/components/analytics/PostHogProvider";
+import PageView from "@/components/analytics/PageView";
 import "./globals.css";
 
 const inter = Inter({
@@ -36,7 +39,12 @@ export default async function RootLayout({
     <html lang={locale} className={`${inter.variable} ${fraunces.variable}`}>
       <body className="font-sans bg-cream text-navy">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          {children}
+          <PostHogProvider>
+            <Suspense fallback={null}>
+              <PageView />
+            </Suspense>
+            {children}
+          </PostHogProvider>
         </NextIntlClientProvider>
       </body>
     </html>

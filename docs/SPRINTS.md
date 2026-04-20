@@ -131,8 +131,10 @@ Goal: users come back tomorrow.
 - [ ] PLAYBOOK update — WhatsApp smoke test
 
 ### Added observability *(entering user territory)*
-- [ ] Sentry wired (error boundaries + source maps)
-- [ ] PostHog wired (`$pageview`, `habit_created`, `checkin`, `streak_extended`)
+- [x] Sentry scaffolded — `sentry.{client,server,edge}.config.ts` + `instrumentation.ts`; `withSentryConfig` wraps `next.config.js`. No-op until `NEXT_PUBLIC_SENTRY_DSN` is set. Source-map upload is build-time and gated on `SENTRY_AUTH_TOKEN`.
+- [x] PostHog scaffolded — `lib/analytics/{posthog-client,posthog-server,events}.ts`, `<PostHogProvider>` in `app/layout.tsx`, `<PageView>` fires `$pageview` on App Router nav. No-op until `NEXT_PUBLIC_POSTHOG_KEY` is set.
+- [ ] User task: create Sentry + PostHog projects, paste DSN + key into `.env.local`, verify first event lands
+- [ ] Server-side `track()` calls in habit Server Actions (`habit_created`, `check_in`, `streak_extended`) — wire up once the keys are live
 
 ---
 

@@ -15,8 +15,8 @@ Single source of truth for how Streak is put together and why.
 | Auth              | Supabase Auth (magic link)      | No passwords to manage. OAuth can be added later without schema changes.                        |
 | Payments          | Stripe (Checkout + Portal)      | Industry standard. Portal offloads billing UI to Stripe.                                        |
 | Deployment        | Vercel                          | First-party Next.js host; previews on every PR.                                                 |
-| Error tracking    | Sentry *(Phase 2+)*             | Deferred. Console logs are fine for <100 users.                                                 |
-| Product analytics | PostHog *(Phase 2+)*            | Deferred. Combines analytics + feature flags + session replay; single tool.                     |
+| Error tracking    | Sentry (Developer free tier)    | Wired 2026-04-20; no-op until `NEXT_PUBLIC_SENTRY_DSN` is set. 5k errors/mo.                    |
+| Product analytics | PostHog Cloud (EU)              | Wired 2026-04-20; no-op until `NEXT_PUBLIC_POSTHOG_KEY` is set. 1M events/mo; analytics + flags.|
 
 ## Repository layout
 
@@ -195,6 +195,10 @@ Copy [.env.example](../.env.example) to `.env.local`. Never commit `.env.local`.
 | `CRON_SECRET`                      | Server      | Shared secret the cron caller (GitHub Actions) sends as `Authorization: Bearer …`. |
 | `UNSUB_TOKEN_SECRET`               | Server      | HMAC key for one-click unsubscribe tokens. Long-lived; rotate rarely. |
 | `NEXT_PUBLIC_SITE_URL`             | Client+Srv  | Base URL for links inside emails (unsub, check-in).                   |
+| `NEXT_PUBLIC_SENTRY_DSN`           | Client+Srv  | Sentry DSN. Empty = Sentry disabled (init no-ops).                    |
+| `SENTRY_AUTH_TOKEN` / `_ORG` / `_PROJECT` | Build | Source-map upload at build time. Skipped if token is missing.     |
+| `NEXT_PUBLIC_POSTHOG_KEY`          | Client+Srv  | PostHog project key. Empty = analytics disabled (track() no-ops).     |
+| `NEXT_PUBLIC_POSTHOG_HOST`         | Client+Srv  | EU or US cloud; defaults to `https://eu.posthog.com`.                 |
 
 **Safety rails:**
 - `middleware.ts` no-ops gracefully if Supabase env vars are missing, so the marketing site still builds/runs without a backend.
