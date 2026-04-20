@@ -1,10 +1,13 @@
-// Mirrors supabase/migrations/0001_init.sql + 0002_locale.sql + 0003_reminders.sql.
+// Mirrors supabase/migrations/0001_init.sql + 0002_locale.sql + 0003_reminders.sql
+// + 0004_whatsapp.sql.
 // Hand-written for now; swap to `supabase gen types typescript` output once the
 // Supabase CLI is wired up (see docs/MEMORY.md).
 
 import type { Locale } from "./i18n/config";
 
-export type ReminderChannel = "email" | "none";
+export type ReminderChannel = "email" | "whatsapp" | "none";
+/** Channels that actually dispatch a message (excludes 'none'). */
+export type SendingChannel = Exclude<ReminderChannel, "none">;
 export type ReminderStatus = "pending" | "sent" | "failed" | "rejected";
 
 export type Database = {
@@ -23,6 +26,8 @@ export type Database = {
           quiet_hours_start: string | null;
           quiet_hours_end: string | null;
           unsubscribed_at: string | null;
+          phone_e164: string | null;
+          whatsapp_opt_in: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -38,6 +43,8 @@ export type Database = {
           quiet_hours_start?: string | null;
           quiet_hours_end?: string | null;
           unsubscribed_at?: string | null;
+          phone_e164?: string | null;
+          whatsapp_opt_in?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -52,6 +59,8 @@ export type Database = {
           quiet_hours_start?: string | null;
           quiet_hours_end?: string | null;
           unsubscribed_at?: string | null;
+          phone_e164?: string | null;
+          whatsapp_opt_in?: boolean;
           updated_at?: string;
         };
         Relationships: [];
@@ -119,7 +128,7 @@ export type Database = {
           user_id: string;
           habit_id: string;
           local_date: string;
-          channel: "email";
+          channel: SendingChannel;
           status: ReminderStatus;
           provider_id: string | null;
           error_message: string | null;
@@ -130,7 +139,7 @@ export type Database = {
           user_id: string;
           habit_id: string;
           local_date: string;
-          channel: "email";
+          channel: SendingChannel;
           status?: ReminderStatus;
           provider_id?: string | null;
           error_message?: string | null;

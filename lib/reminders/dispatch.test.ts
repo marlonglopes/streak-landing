@@ -20,6 +20,8 @@ function base(overrides: Partial<ReminderCandidate> = {}): ReminderCandidate {
     quietHoursStart: null,
     quietHoursEnd: null,
     unsubscribedAt: null,
+    phoneE164: null,
+    whatsappOptIn: false,
     checkInDates: new Set<string>(),
     ...overrides,
   };
@@ -118,6 +120,42 @@ describe("decideDispatch", () => {
     // 08:30 UTC, no override → before default 09:00, skip.
     const decision = decideDispatch(base(), new Date("2024-04-10T08:30:00.000Z"));
     expect(decision).toEqual({ send: false, reason: "before_reminder_time" });
+  });
+
+  it("routes to whatsapp when it's the preferred channel and opt-in is complete", () => {
+    const decision = decideDispatch(
+      base({
+        preferredChannel: "whatsapp",
+        whatsappOptIn: true,
+        phoneE164: "+5511998765432",
+      }),
+      WED_10AM,
+    );
+    expect(decision).toEqual({ send: true, channel: "whatsapp", localDate: "2024-04-10" });
+  });
+
+  it("skips whatsapp when the user hasn't opted in", () => {
+    const decision = decideDispatch(
+      base({
+        preferredChannel: "whatsapp",
+        whatsappOptIn: false,
+        phoneE164: "+5511998765432",
+      }),
+      WED_10AM,
+    );
+    expect(decision).toEqual({ send: false, reason: "whatsapp_not_ready" });
+  });
+
+  it("skips whatsapp when the phone number is missing", () => {
+    const decision = decideDispatch(
+      base({
+        preferredChannel: "whatsapp",
+        whatsappOptIn: true,
+        phoneE164: null,
+      }),
+      WED_10AM,
+    );
+    expect(decision).toEqual({ send: false, reason: "whatsapp_not_ready" });
   });
 });
 

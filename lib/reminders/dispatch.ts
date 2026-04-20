@@ -7,7 +7,7 @@
 // definitely notice (silent failure, 3am wake-up, duplicate sends).
 
 import type { LocalDate } from "@/lib/dates";
-import type { ReminderChannel } from "@/lib/database.types";
+import type { ReminderChannel, SendingChannel } from "@/lib/database.types";
 
 export type ReminderCandidate = {
   userId: string;
@@ -24,17 +24,22 @@ export type ReminderCandidate = {
   quietHoursStart: string | null; // 'HH:MM:SS'
   quietHoursEnd: string | null;
   unsubscribedAt: string | null;
+  /** E.164 phone number, only present if the user verified it. */
+  phoneE164: string | null;
+  /** Opt-in flips true only after OTP verification; cleared on STOP keyword. */
+  whatsappOptIn: boolean;
   /** LocalDate strings on which the user has checked in for this habit. */
   checkInDates: ReadonlySet<LocalDate>;
 };
 
 export type DispatchDecision =
-  | { send: true; channel: "email"; localDate: LocalDate }
+  | { send: true; channel: SendingChannel; localDate: LocalDate }
   | { send: false; reason: DispatchSkipReason };
 
 export type DispatchSkipReason =
   | "unsubscribed"
   | "channel_none"
+  | "whatsapp_not_ready"
   | "already_checked_in"
   | "not_target_day"
   | "quiet_hours"
@@ -102,6 +107,12 @@ export function decideDispatch(
 ): DispatchDecision {
   if (candidate.unsubscribedAt) return { send: false, reason: "unsubscribed" };
   if (candidate.preferredChannel === "none") return { send: false, reason: "channel_none" };
+  if (
+    candidate.preferredChannel === "whatsapp" &&
+    (!candidate.whatsappOptIn || !candidate.phoneE164)
+  ) {
+    return { send: false, reason: "whatsapp_not_ready" };
+  }
 
   const localDate = localDateIn(candidate.timezone, now);
   if (candidate.checkInDates.has(localDate)) {
@@ -125,5 +136,5 @@ export function decideDispatch(
     return { send: false, reason: "before_reminder_time" };
   }
 
-  return { send: true, channel: "email", localDate };
+  return { send: true, channel: candidate.preferredChannel, localDate };
 }

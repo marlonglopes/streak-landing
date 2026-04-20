@@ -121,11 +121,11 @@ Goal: users come back tomorrow.
 
 **Why split:** Meta Business verification + template approval isn't on our timeline. Email unblocks immediately; WhatsApp lands behind the same dispatch interface when approval clears. Brazilian users are the primary driver (see `memory/project_brazilian_users.md`).
 
-- [ ] Migration: `phone_e164`, `whatsapp_opt_in` on `profiles`; extend `preferred_reminder_channel` CHECK to include `'whatsapp'`
+- [x] Migration `0004_whatsapp.sql`: `phone_e164` (E.164 CHECK), `whatsapp_opt_in` on `profiles`; widened `preferred_reminder_channel` + `reminder_sends.channel` CHECK to include `'whatsapp'`
 - [ ] Meta Business / WhatsApp BSP account — **user task** (Twilio is simplest for a solo dev; Zenvia is cheaper + BR-native but more paperwork)
 - [ ] Template approval for the reminder message (en + pt-BR) in Meta Business Manager
-- [ ] `lib/whatsapp/send.ts` — BSP client; same interface as `sendEmail`
-- [ ] Dispatch routing in `lib/reminders/dispatch.ts` picks adapter from `profiles.preferred_reminder_channel`
+- [x] `lib/whatsapp/send.ts` — dry-run-by-default stub with the same shape as `sendEmail`; real send path returns `rejected` until `WHATSAPP_PROVIDER` is wired
+- [x] Dispatch routing in `lib/reminders/dispatch.ts` picks channel from `profiles.preferred_reminder_channel` (new `whatsapp_not_ready` skip reason when opt-in/phone missing); cron route still filters to email only until BSP clears
 - [ ] Phone number verification flow on `/app/settings` (OTP via WhatsApp)
 - [ ] STOP keyword handling → sets `whatsapp_opt_in = false`
 - [ ] PLAYBOOK update — WhatsApp smoke test

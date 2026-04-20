@@ -3,9 +3,10 @@
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { updateReminderPrefs } from "@/app/actions/reminders";
+import type { ReminderChannel } from "@/lib/database.types";
 
 type Props = {
-  channel: "email" | "none";
+  channel: ReminderChannel;
   quietHoursStart: string | null;
   quietHoursEnd: string | null;
   unsubscribedAt: string | null;

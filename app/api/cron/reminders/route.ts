@@ -44,11 +44,13 @@ export async function GET(request: NextRequest) {
   const summary: Summary = { considered: 0, sent: 0, skipped: {}, failed: 0 };
 
   // Load candidate users: subscribed + preferred channel is email + has email.
-  // We pull from auth.users via RPC-less join: profiles + an email lookup.
+  // WhatsApp candidates are selected in Sprint 2.4 once a BSP is wired — the
+  // schema already supports it (see lib/whatsapp/send.ts) but real sends are
+  // gated on template approval from Meta.
   const { data: users, error: usersError } = await supabase
     .from("profiles")
     .select(
-      "id, display_name, timezone, locale, preferred_reminder_channel, quiet_hours_start, quiet_hours_end, unsubscribed_at",
+      "id, display_name, timezone, locale, preferred_reminder_channel, quiet_hours_start, quiet_hours_end, unsubscribed_at, phone_e164, whatsapp_opt_in",
     )
     .eq("preferred_reminder_channel", "email")
     .is("unsubscribed_at", null);
@@ -120,6 +122,8 @@ export async function GET(request: NextRequest) {
       quietHoursStart: profile.quiet_hours_start,
       quietHoursEnd: profile.quiet_hours_end,
       unsubscribedAt: profile.unsubscribed_at,
+      phoneE164: profile.phone_e164,
+      whatsappOptIn: profile.whatsapp_opt_in,
       checkInDates: checkInsByHabit.get(habit.id) ?? new Set(),
     };
 
