@@ -72,7 +72,7 @@ Where to find each value in the Supabase dashboard:
 
 ### 2.3 Apply the schema
 
-Supabase dashboard → SQL Editor → paste `supabase/migrations/0001_init.sql` → Run. Verify three tables exist (`profiles`, `habits`, `check_ins`) with RLS enabled on each.
+Supabase dashboard → SQL Editor → paste `supabase/migrations/0001_init.sql` → Run. Verify three tables exist (`profiles`, `habits`, `check_ins`) with RLS enabled on each. Then run `supabase/migrations/0002_locale.sql` to add `profiles.locale` (required for Sprint 2.2 i18n). Existing profiles are backfilled with `'en'` by the `default` clause.
 
 ### 2.4 Configure auth
 

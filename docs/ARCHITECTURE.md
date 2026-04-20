@@ -46,7 +46,7 @@ streak-landing/
 
 ## Data model
 
-All tables live in the `public` schema and have Row Level Security enabled. The canonical source is [supabase/migrations/0001_init.sql](../supabase/migrations/0001_init.sql).
+All tables live in the `public` schema and have Row Level Security enabled. The canonical sources are [supabase/migrations/0001_init.sql](../supabase/migrations/0001_init.sql) and [supabase/migrations/0002_locale.sql](../supabase/migrations/0002_locale.sql).
 
 ```
 auth.users  (Supabase-managed)
@@ -55,8 +55,9 @@ auth.users  (Supabase-managed)
 profiles ─── 1:N ───► habits ─── 1:N ───► check_ins
   id                     id                  habit_id
   timezone               name                 user_id
-  subscription_tier      cadence              local_date  ← UNIQUE per (habit, date)
-  stripe_customer_id     target_days          checked_in_at
+  locale                 cadence              local_date  ← UNIQUE per (habit, date)
+  subscription_tier      target_days          checked_in_at
+  stripe_customer_id
 ```
 
 ### Key invariants
@@ -95,6 +96,33 @@ This is the single biggest correctness risk in a habit tracker.
 **DST and travel:** because we store local dates, a user flying from NYC to Tokyo will never see their streak "skip" or "double". If they change their `profiles.timezone`, prior check-ins are still correct (they're calendar dates, not instants).
 
 **Tests required before Phase 3 ships** — see [docs/MEMORY.md → Risks](MEMORY.md#known-risks).
+
+## Localization
+
+Two locales today: **`en`** and **`pt-BR`**. Framework: `next-intl@3` in App Router mode. No URL-based locale routing — every route serves whichever locale resolves for the current request.
+
+**Resolution order** (see [lib/i18n/request.ts](../lib/i18n/request.ts)):
+1. Signed-in user's `profiles.locale` (authoritative — follows them across devices).
+2. `NEXT_LOCALE` cookie (anonymous visitor who used the switcher).
+3. `Accept-Language` header (first visit, language-aware fallback).
+4. `DEFAULT_LOCALE` (`en`).
+
+**Where strings live:**
+- Dictionaries: `locales/en.json`, `locales/pt-BR.json`. ICU format — use `{count, plural, one {...} other {...}}` for counted strings and `{x, select, yes {...} other {...}}` for branching.
+- Server components: `await getTranslations("namespace")`.
+- Client components: `useTranslations("namespace")` (the root layout wraps everything in `NextIntlClientProvider`).
+- Server Action error messages: translate at the action before encoding into the redirect URL.
+
+**Dates and weekday labels:** always go through `Intl.DateTimeFormat(locale, ...)`. Never hardcode month or weekday arrays. See `HabitForm`, `HabitHeatmap`, and the Today eyebrow for the pattern.
+
+**Switching locale:** `LocaleSwitcher` calls the `setLocale` Server Action, which writes `profiles.locale` for signed-in users and always sets the `NEXT_LOCALE` cookie (1 year). `revalidatePath("/", "layout")` re-renders everything in the new language.
+
+**Adding a new locale:**
+1. Add the tag to `LOCALES` in `lib/i18n/config.ts`.
+2. Update the CHECK constraint in a new migration (don't edit `0002_locale.sql`).
+3. Create `locales/<tag>.json` matching every key in `en.json`.
+4. Extend `matchAcceptLanguage` if the header detection needs to grow.
+5. Add the option to `localeSwitcher.*` in every dictionary.
 
 ## Auth flow
 

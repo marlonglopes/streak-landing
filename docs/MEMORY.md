@@ -49,6 +49,11 @@ Append-only log. Date · short title · context · decision · (optional) conseq
 **Context:** user asked for it as a standing rule.
 **Decision:** every commit uses Conventional Commits. Type + optional scope + imperative subject ≤72 chars.
 
+### 2026-04-19 · i18n lands in Sprint 2.2, not Phase 6
+**Context:** real Brazilian users already signed up. Deferring localization until reminder emails ship would mean bilingual email templates on top of a bilingual string rewrite.
+**Decision:** pull i18n forward to Sprint 2.2 with `next-intl` + en/pt-BR dictionaries. Locale resolves at the request boundary (`profiles.locale` → `NEXT_LOCALE` cookie → `Accept-Language` → `en`); no URL-based locale routing.
+**Consequence:** `profiles.locale` is authoritative for signed-in users. Every new user-facing string goes through the message catalog from day one. Reminder emails in Sprint 2.3 read `profiles.locale` directly. Non-goal: auto-translation at build — native speaker reviews every pt-BR string.
+
 ---
 
 ## Non-goals (explicitly deferred)
@@ -64,7 +69,8 @@ If you catch yourself building one of these before the phase in parentheses, sto
 - **Offline sync.** (Phase 5.)
 - **Friend challenges.** (Phase 4.)
 - **Email reminders.** (Phase 2.2.)
-- **Localization.** English only for MVP. Timezone ≠ language.
+- **URL-based locale routing** (`/en/app` vs `/pt-BR/app`). Locale is stored on the profile or in a cookie; URLs stay clean. Revisit only if SEO demands it.
+- **Locales beyond en + pt-BR.** Adding a third locale means adding the dictionary, the CHECK constraint value, and the switcher option — all cheap, but not MVP work.
 - **GDPR data-export UI.** Mailto at launch; wire up properly in Phase 6.
 
 ---
