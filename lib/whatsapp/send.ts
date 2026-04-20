@@ -1,4 +1,4 @@
-// WhatsApp adapter — same shape as lib/email/mandrill.ts so the dispatcher can
+// WhatsApp adapter — same shape as lib/email/resend.ts so the dispatcher can
 // pick one at runtime from profiles.preferred_reminder_channel.
 //
 // State: scaffolding only. No BSP is wired yet — Meta Business verification +
@@ -31,7 +31,7 @@ export type SendWhatsAppResult =
   | { status: "dry_run"; providerId: null };
 
 function isDryRun(): boolean {
-  // Mirrors Mandrill: default to dry-run unless explicitly set to 0.
+  // Mirrors Resend: default to dry-run unless explicitly set to 0.
   const raw = process.env.WHATSAPP_DRY_RUN;
   return raw === undefined || raw === "1" || raw === "true";
 }

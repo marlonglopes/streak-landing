@@ -144,12 +144,12 @@ Daily reminders are opt-in (default on) and single-channel per user — we pick 
 2. Service-role client loads candidate users (`preferred_reminder_channel='email'`, `unsubscribed_at IS NULL`), their active habits, and the last few days of check-ins.
 3. For each `(habit × user)` pair, `decideDispatch()` in [lib/reminders/dispatch.ts](../lib/reminders/dispatch.ts) answers yes/no with a reason (`unsubscribed`, `channel_none`, `already_checked_in`, `not_target_day`, `quiet_hours`, `before_reminder_time`). Pure function — heavily unit tested.
 4. Insert a `reminder_sends` row with `status='pending'` *before* calling the provider. Unique-key conflict = another tick already claimed it; skip.
-5. Send via Mandrill (`lib/email/mandrill.ts`). `MANDRILL_DRY_RUN=1` logs the payload and returns synthetic success — the default in development.
+5. Send via Resend (`lib/email/resend.ts`). `RESEND_DRY_RUN=1` logs the payload and returns synthetic success — the default in development.
 6. Update the row with `status='sent' | 'failed' | 'rejected'` and the provider id.
 
 **Unsubscribe:** email footer links to `/r/unsub?t=<token>`. Token is HMAC-SHA256 over the user id signed with `UNSUB_TOKEN_SECRET`. No DB lookup needed to validate — rotating the secret invalidates every outstanding link (acceptable; we'd only rotate after a leak).
 
-**Dev loop:** leave `MANDRILL_DRY_RUN=1` in `.env.local`. Hit `/api/cron/reminders` locally with `curl -H "Authorization: Bearer $CRON_SECRET"` and the handler runs end-to-end without sending. Flip to `0` only after domain verification (SPF + DKIM) in Mandrill.
+**Dev loop:** leave `RESEND_DRY_RUN=1` in `.env.local`. Hit `/api/cron/reminders` locally with `curl -H "Authorization: Bearer $CRON_SECRET"` and the handler runs end-to-end without sending. Flip to `0` only after domain verification (SPF + DKIM + DMARC) in Resend.
 
 ## Auth flow
 
@@ -189,10 +189,10 @@ Copy [.env.example](../.env.example) to `.env.local`. Never commit `.env.local`.
 | `STRIPE_SECRET_KEY`                | Server      | Stripe API. Phase 3.                                                  |
 | `STRIPE_WEBHOOK_SECRET`            | Server      | Verifies Stripe webhook signatures. Phase 3.                          |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`| Client     | Stripe.js initialization. Phase 3.                                    |
-| `MANDRILL_API_KEY`                 | Server      | Mailchimp Transactional API key for reminder emails.                  |
-| `MANDRILL_FROM_EMAIL` / `_FROM_NAME` | Server    | Verified sender identity. Domain needs SPF + DKIM before going live.  |
-| `MANDRILL_DRY_RUN`                 | Server      | `1` skips the API call and logs the payload. Default in dev.          |
-| `CRON_SECRET`                      | Server      | Shared secret Vercel Cron sends as `Authorization: Bearer …`.         |
+| `RESEND_API_KEY`                   | Server      | Resend API key for reminder emails (Sprint 2.3). Free tier: 3k/mo.    |
+| `RESEND_FROM_EMAIL` / `_FROM_NAME` | Server      | Verified sender identity. Domain needs SPF + DKIM + DMARC before live.|
+| `RESEND_DRY_RUN`                   | Server      | `1` skips the API call and logs the payload. Default in dev.          |
+| `CRON_SECRET`                      | Server      | Shared secret the cron caller (GitHub Actions) sends as `Authorization: Bearer …`. |
 | `UNSUB_TOKEN_SECRET`               | Server      | HMAC key for one-click unsubscribe tokens. Long-lived; rotate rarely. |
 | `NEXT_PUBLIC_SITE_URL`             | Client+Srv  | Base URL for links inside emails (unsub, check-in).                   |
 

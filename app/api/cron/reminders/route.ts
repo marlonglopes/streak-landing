@@ -1,18 +1,20 @@
-// Vercel Cron entrypoint. Loads every (habit × user) candidate, asks
-// decideDispatch() whether to fire, then serializes sends through Mandrill.
+// Cron entrypoint. Loads every (habit × user) candidate, asks decideDispatch()
+// whether to fire, then serializes sends through Resend.
 //
-// Idempotency: we INSERT a row into reminder_sends BEFORE calling Mandrill.
+// Idempotency: we INSERT a row into reminder_sends BEFORE calling the provider.
 // The (habit_id, local_date, channel) UNIQUE constraint causes concurrent
 // cron ticks to collide — only one wins, the other's decision becomes a no-op.
-// After Mandrill responds, we UPDATE the row's status + provider_id.
+// After the provider responds, we UPDATE the row's status + provider_id.
 //
-// Auth: Vercel Cron sends `Authorization: Bearer <CRON_SECRET>`. Everything
-// else is rejected with 401 to prevent unauthenticated triggers.
+// Auth: caller sends `Authorization: Bearer <CRON_SECRET>`. Everything else is
+// rejected with 401 to prevent unauthenticated triggers. Triggered from GitHub
+// Actions (see .github/workflows/reminders-cron.yml) because Vercel Hobby caps
+// cron at once-per-day and we need 15-minute granularity.
 
 import { NextResponse, type NextRequest } from "next/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { decideDispatch, type ReminderCandidate } from "@/lib/reminders/dispatch";
-import { sendEmail } from "@/lib/email/mandrill";
+import { sendEmail } from "@/lib/email/resend";
 import { buildReminderEmail } from "@/lib/email/templates";
 import { createUnsubscribeToken } from "@/lib/email/unsubscribe-token";
 import { isLocale } from "@/lib/i18n/config";

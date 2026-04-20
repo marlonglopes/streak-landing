@@ -64,10 +64,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 SUPABASE_SERVICE_ROLE_KEY=sb_secret_...
 
 # Sprint 2.3 — reminders. In dev, leave DRY_RUN on and skip the real API keys.
-MANDRILL_API_KEY=md-placeholder
-MANDRILL_FROM_EMAIL=reminders@yourdomain.com
-MANDRILL_FROM_NAME=Streak
-MANDRILL_DRY_RUN=1
+RESEND_API_KEY=re-placeholder
+RESEND_FROM_EMAIL=reminders@yourdomain.com
+RESEND_FROM_NAME=Streak
+RESEND_DRY_RUN=1
 CRON_SECRET=$(openssl rand -hex 32)
 UNSUB_TOKEN_SECRET=$(openssl rand -hex 32)
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
@@ -79,12 +79,12 @@ Where to find each value in the Supabase dashboard:
 - **Publishable key** (`sb_publishable_...`): Project Settings → API Keys → "publishable" key
 - **Secret key** (`sb_secret_...`): Project Settings → API Keys → "secret" key *(treat like a password; don't paste in chats)*
 
-Mandrill setup (do this once before flipping `MANDRILL_DRY_RUN=0`):
+Resend setup (do this once before flipping `RESEND_DRY_RUN=0`). Full walkthrough lives in [SERVICES.md §3](SERVICES.md#3-resend--transactional-email):
 
-- Log in at https://mailchimp.com → click the 9-dot menu top-left → **Transactional** (this is Mandrill).
-- Settings → **SMTP & API Info** → generate a new API key. Paste it into `MANDRILL_API_KEY`.
-- Settings → **Sending Domains** → add your domain → copy the SPF + DKIM records into your DNS → click **Verify**. Both must show green before real sends will deliver.
-- Set `MANDRILL_FROM_EMAIL` to an address at that verified domain.
+- Sign up at https://resend.com. Free tier covers 3,000 sends/month, 100/day — plenty for the MVP.
+- **Domains** → add your sending domain → copy the SPF, DKIM, and DMARC records into your DNS → wait for all three to turn green.
+- **API Keys** → create a key named `streak-prod`. Paste into `RESEND_API_KEY`.
+- Set `RESEND_FROM_EMAIL` to an address at that verified domain (e.g. `reminders@streak.app`).
 
 ### 2.3 Apply the schema
 
@@ -281,7 +281,7 @@ Precedence: signed-in `profiles.locale` → `NEXT_LOCALE` cookie → `Accept-Lan
 
 ### 6.10 Reminders (dry-run smoke test)
 
-Prerequisites: migration `0003_reminders.sql` applied, `CRON_SECRET` and `UNSUB_TOKEN_SECRET` set in `.env.local`, `MANDRILL_DRY_RUN=1`.
+Prerequisites: migration `0003_reminders.sql` applied, `CRON_SECRET` and `UNSUB_TOKEN_SECRET` set in `.env.local`, `RESEND_DRY_RUN=1`.
 
 **Cron handler:**
 
@@ -289,7 +289,7 @@ Prerequisites: migration `0003_reminders.sql` applied, `CRON_SECRET` and `UNSUB_
    ```bash
    curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/reminders
    ```
-2. Expect `{"ok":true,"summary":{…}}`. The handler walks every eligible user × habit, decides per-row, and emits `[mandrill:dry-run]` logs in the dev server output instead of hitting the API.
+2. Expect `{"ok":true,"summary":{…}}`. The handler walks every eligible user × habit, decides per-row, and emits `[resend:dry-run]` logs in the dev server output instead of hitting the API.
 3. Unauthenticated calls return 401:
    ```bash
    curl http://localhost:3000/api/cron/reminders  # → 401

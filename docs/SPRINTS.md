@@ -105,12 +105,12 @@ Goal: users come back tomorrow.
 **Decision (2026-04-19):** one channel per user, not per habit. Rationale lives in `docs/MEMORY.md`. This sprint delivers the email adapter; WhatsApp is the second adapter behind the same interface in Sprint 2.4.
 
 - [x] Migration `0003_reminders.sql`: `preferred_reminder_channel`, `quiet_hours_start/end`, `unsubscribed_at` on `profiles`; new `reminder_sends` table (`habit_id`, `local_date`, `channel` UNIQUE for idempotency)
-- [ ] Mailchimp Transactional (Mandrill) account wired — API key in `.env.local` *(user task; see `memory/project_mailchimp.md`)*
-- [x] `lib/email/mandrill.ts` — thin REST client with a `DRY_RUN=1` guard so local testing never bills
+- [ ] Resend account wired — API key + verified domain; paste `RESEND_API_KEY` into `.env.local` *(user task; see `docs/SERVICES.md` §3)*
+- [x] `lib/email/resend.ts` — thin REST client with a `DRY_RUN=1` guard so local testing never bills *(was Mandrill; swapped to Resend 2026-04-20 for free tier)*
 - [x] `lib/email/templates.ts` — en + pt-BR reminder templates (HTML + plaintext), language keyed off `profiles.locale`
 - [x] `lib/email/unsubscribe-token.ts` — HMAC-signed, long-lived unsub tokens keyed on `user_id`
 - [x] `lib/reminders/dispatch.ts` — pure selection logic (quiet hours, timezone, channel, already-sent, already-checked-in) with ≥10 tests
-- [x] `app/api/cron/reminders/route.ts` — CRON_SECRET-protected handler; dispatches one Mandrill send per eligible habit and records to `reminder_sends`
+- [x] `app/api/cron/reminders/route.ts` — CRON_SECRET-protected handler; dispatches one Resend send per eligible habit and records to `reminder_sends`
 - [x] `app/r/unsub/route.ts` — one-click unsubscribe from the email footer (HMAC token, no login required)
 - [x] `/app/settings` page + `ReminderSettings` component — channel picker, quiet-hours, unsubscribe toggle
 - [x] `vercel.json` cron schedule (`*/15 * * * *` to start — coarse enough for Hobby plan)

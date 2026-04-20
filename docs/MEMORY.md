@@ -54,10 +54,15 @@ Append-only log. Date · short title · context · decision · (optional) conseq
 **Decision:** `profiles.preferred_reminder_channel` holds one of `email | none` today, widened to include `whatsapp` in 2.4. Every active habit for that user flows through the same channel.
 **Consequence:** simpler settings UI (one picker, not N), simpler quota accounting, simpler migration when a user switches channels. Per-habit overrides are an escape hatch we can add later without schema changes (store an override column on `habits`); we don't owe that complexity to users who haven't asked for it. WhatsApp is blocked on Meta Business verification + template approval, so shipping email first de-risks the sprint.
 
-### 2026-04-19 · Mandrill dry-run is the default in dev
+### 2026-04-19 · Transactional-email dry-run is the default in dev
 **Context:** Real email sends in a local dev loop burn quota, spam your inbox, and surprise you on the first accidental production-ish push.
-**Decision:** `MANDRILL_DRY_RUN` defaults to `1` when unset. The client logs the payload and returns a synthetic success. Flip to `0` only after the domain's SPF + DKIM are verified in Mandrill.
-**Consequence:** `reminder_sends` rows land with `provider_id='dry_run'` in dev — handy smoke signal that the pipeline is wired up, even without hitting the API.
+**Decision:** the transactional adapter defaults dry-run to `1` when unset. The client logs the payload and returns a synthetic success. Flip to `0` only after the domain's SPF + DKIM (+ DMARC on Resend) are verified.
+**Consequence:** `reminder_sends` rows land with `provider_id='dry_run'` in dev — handy smoke signal that the pipeline is wired up, even without hitting the API. *(Originally Mandrill; the provider swap on 2026-04-20 preserved the dry-run contract.)*
+
+### 2026-04-20 · Free-tier-first stack; Resend replaces Mandrill for transactional
+**Context:** pre-launch, no revenue. Mandrill has no free tier ($20/mo minimum) and sits next to Mailchimp marketing in a way that blurs "transactional" and "marketing" responsibilities. User has a Mailchimp account but explicitly doesn't want to mix the two lanes.
+**Decision:** swap `lib/email/mandrill.ts` → `lib/email/resend.ts` (3k/mo free tier, same `SendEmailInput`/`SendEmailResult` shape). Lock the broader stack to free tiers: Supabase, Vercel Hobby, Resend, Sentry Developer, PostHog Cloud, Stripe (no monthly), GitHub Actions for cron (to bypass Hobby's 1×/day cron cap), BetterStack for uptime. Mailchimp Marketing stays reserved for Phase 7 lifecycle drips — separate vendor, separate purpose.
+**Consequence:** MVP runs at $0/mo recurring. First paid tier is Vercel Pro ($20/mo) the day Stripe live mode flips on (Hobby TOS disallows commercial use). Full vendor-by-vendor reference in [docs/SERVICES.md](SERVICES.md).
 
 ### 2026-04-19 · i18n lands in Sprint 2.2, not Phase 6
 **Context:** real Brazilian users already signed up. Deferring localization until reminder emails ship would mean bilingual email templates on top of a bilingual string rewrite.
