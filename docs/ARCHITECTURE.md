@@ -46,7 +46,7 @@ streak-landing/
 
 ## Data model
 
-All tables live in the `public` schema and have Row Level Security enabled. The canonical sources are [supabase/migrations/0001_init.sql](../supabase/migrations/0001_init.sql) and [supabase/migrations/0002_locale.sql](../supabase/migrations/0002_locale.sql).
+All tables live in the `public` schema and have Row Level Security enabled. The canonical sources are [supabase/migrations/0001_init.sql](../supabase/migrations/0001_init.sql), [supabase/migrations/0002_locale.sql](../supabase/migrations/0002_locale.sql), and [supabase/migrations/0003_reminders.sql](../supabase/migrations/0003_reminders.sql).
 
 ```
 auth.users  (Supabase-managed)
@@ -58,6 +58,11 @@ profiles ─── 1:N ───► habits ─── 1:N ───► check_ins
   locale                 cadence              local_date  ← UNIQUE per (habit, date)
   subscription_tier      target_days          checked_in_at
   stripe_customer_id
+  preferred_reminder_channel     └── 1:N ───► reminder_sends
+  quiet_hours_start/end                        habit_id
+  unsubscribed_at                              local_date
+                                               channel
+                                               status       ← UNIQUE (habit, date, channel)
 ```
 
 ### Key invariants
@@ -124,6 +129,28 @@ Two locales today: **`en`** and **`pt-BR`**. Framework: `next-intl@3` in App Rou
 4. Extend `matchAcceptLanguage` if the header detection needs to grow.
 5. Add the option to `localeSwitcher.*` in every dictionary.
 
+## Reminders
+
+Daily reminders are opt-in (default on) and single-channel per user — we pick one channel for the whole user, not per habit. Rationale in [docs/MEMORY.md](MEMORY.md#decisions).
+
+**Schema** ([supabase/migrations/0003_reminders.sql](../supabase/migrations/0003_reminders.sql)):
+- `profiles.preferred_reminder_channel` — `'email'` or `'none'`. Widened to include `'whatsapp'` in Sprint 2.4.
+- `profiles.quiet_hours_start / _end` — inclusive/exclusive window in the user's timezone. `end < start` wraps past midnight.
+- `profiles.unsubscribed_at` — one-click unsubscribe timestamp. Non-null means skip the user.
+- `reminder_sends` — idempotency + audit log. UNIQUE `(habit_id, local_date, channel)` ensures a duplicate cron tick can't double-send.
+
+**Dispatch flow** (every 15 minutes via Vercel Cron):
+1. `GET /api/cron/reminders` — auth'd via `Authorization: Bearer $CRON_SECRET`.
+2. Service-role client loads candidate users (`preferred_reminder_channel='email'`, `unsubscribed_at IS NULL`), their active habits, and the last few days of check-ins.
+3. For each `(habit × user)` pair, `decideDispatch()` in [lib/reminders/dispatch.ts](../lib/reminders/dispatch.ts) answers yes/no with a reason (`unsubscribed`, `channel_none`, `already_checked_in`, `not_target_day`, `quiet_hours`, `before_reminder_time`). Pure function — heavily unit tested.
+4. Insert a `reminder_sends` row with `status='pending'` *before* calling the provider. Unique-key conflict = another tick already claimed it; skip.
+5. Send via Mandrill (`lib/email/mandrill.ts`). `MANDRILL_DRY_RUN=1` logs the payload and returns synthetic success — the default in development.
+6. Update the row with `status='sent' | 'failed' | 'rejected'` and the provider id.
+
+**Unsubscribe:** email footer links to `/r/unsub?t=<token>`. Token is HMAC-SHA256 over the user id signed with `UNSUB_TOKEN_SECRET`. No DB lookup needed to validate — rotating the secret invalidates every outstanding link (acceptable; we'd only rotate after a leak).
+
+**Dev loop:** leave `MANDRILL_DRY_RUN=1` in `.env.local`. Hit `/api/cron/reminders` locally with `curl -H "Authorization: Bearer $CRON_SECRET"` and the handler runs end-to-end without sending. Flip to `0` only after domain verification (SPF + DKIM) in Mandrill.
+
 ## Auth flow
 
 ```
@@ -162,6 +189,12 @@ Copy [.env.example](../.env.example) to `.env.local`. Never commit `.env.local`.
 | `STRIPE_SECRET_KEY`                | Server      | Stripe API. Phase 3.                                                  |
 | `STRIPE_WEBHOOK_SECRET`            | Server      | Verifies Stripe webhook signatures. Phase 3.                          |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`| Client     | Stripe.js initialization. Phase 3.                                    |
+| `MANDRILL_API_KEY`                 | Server      | Mailchimp Transactional API key for reminder emails.                  |
+| `MANDRILL_FROM_EMAIL` / `_FROM_NAME` | Server    | Verified sender identity. Domain needs SPF + DKIM before going live.  |
+| `MANDRILL_DRY_RUN`                 | Server      | `1` skips the API call and logs the payload. Default in dev.          |
+| `CRON_SECRET`                      | Server      | Shared secret Vercel Cron sends as `Authorization: Bearer …`.         |
+| `UNSUB_TOKEN_SECRET`               | Server      | HMAC key for one-click unsubscribe tokens. Long-lived; rotate rarely. |
+| `NEXT_PUBLIC_SITE_URL`             | Client+Srv  | Base URL for links inside emails (unsub, check-in).                   |
 
 **Safety rails:**
 - `middleware.ts` no-ops gracefully if Supabase env vars are missing, so the marketing site still builds/runs without a backend.

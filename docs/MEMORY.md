@@ -49,6 +49,16 @@ Append-only log. Date · short title · context · decision · (optional) conseq
 **Context:** user asked for it as a standing rule.
 **Decision:** every commit uses Conventional Commits. Type + optional scope + imperative subject ≤72 chars.
 
+### 2026-04-19 · Reminders are single-channel per user, not per habit
+**Context:** Sprint 2.3 ships email reminders; Sprint 2.4 adds WhatsApp. The alternative (per-habit channel picker) was rejected.
+**Decision:** `profiles.preferred_reminder_channel` holds one of `email | none` today, widened to include `whatsapp` in 2.4. Every active habit for that user flows through the same channel.
+**Consequence:** simpler settings UI (one picker, not N), simpler quota accounting, simpler migration when a user switches channels. Per-habit overrides are an escape hatch we can add later without schema changes (store an override column on `habits`); we don't owe that complexity to users who haven't asked for it. WhatsApp is blocked on Meta Business verification + template approval, so shipping email first de-risks the sprint.
+
+### 2026-04-19 · Mandrill dry-run is the default in dev
+**Context:** Real email sends in a local dev loop burn quota, spam your inbox, and surprise you on the first accidental production-ish push.
+**Decision:** `MANDRILL_DRY_RUN` defaults to `1` when unset. The client logs the payload and returns a synthetic success. Flip to `0` only after the domain's SPF + DKIM are verified in Mandrill.
+**Consequence:** `reminder_sends` rows land with `provider_id='dry_run'` in dev — handy smoke signal that the pipeline is wired up, even without hitting the API.
+
 ### 2026-04-19 · i18n lands in Sprint 2.2, not Phase 6
 **Context:** real Brazilian users already signed up. Deferring localization until reminder emails ship would mean bilingual email templates on top of a bilingual string rewrite.
 **Decision:** pull i18n forward to Sprint 2.2 with `next-intl` + en/pt-BR dictionaries. Locale resolves at the request boundary (`profiles.locale` → `NEXT_LOCALE` cookie → `Accept-Language` → `en`); no URL-based locale routing.
@@ -68,7 +78,9 @@ If you catch yourself building one of these before the phase in parentheses, sto
 - **Custom cadences beyond daily/weekly.** (Skip "every 3 days," "Mon/Wed/Fri except holidays," etc.)
 - **Offline sync.** (Phase 5.)
 - **Friend challenges.** (Phase 4.)
-- **Email reminders.** (Phase 2.2.)
+- **Per-habit reminder channels.** Channel is picked per user, not per habit. Escape hatch: add an override column on `habits` without schema churn. (Revisit only if users ask.)
+- **WhatsApp reminders.** (Sprint 2.4, behind the same interface as email.)
+- **Push notifications.** (Phase 2 after native wrappers land in Phase 5, if ever.)
 - **URL-based locale routing** (`/en/app` vs `/pt-BR/app`). Locale is stored on the profile or in a cookie; URLs stay clean. Revisit only if SEO demands it.
 - **Locales beyond en + pt-BR.** Adding a third locale means adding the dictionary, the CHECK constraint value, and the switcher option — all cheap, but not MVP work.
 - **GDPR data-export UI.** Mailto at launch; wire up properly in Phase 6.

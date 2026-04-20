@@ -207,5 +207,21 @@
     "label": "Idioma",
     "en": "English",
     "pt-BR": "Português (BR)"
+  },
+  "settings": {
+    "title": "Configurações",
+    "reminders": {
+      "heading": "Lembretes",
+      "channelLabel": "Como devemos te lembrar?",
+      "channelEmail": "E-mail",
+      "channelNone": "Não enviar lembretes",
+      "quietHoursLabel": "Horário de silêncio",
+      "quietHoursHelp": "Não enviaremos lembretes nesse intervalo. Deixe em branco para desativar.",
+      "quietStart": "Início",
+      "quietEnd": "Fim",
+      "save": "Salvar",
+      "saving": "Salvando…",
+      "reEnableNote": "Você havia cancelado a inscrição. Ao salvar com E-mail ligado, os lembretes serão reativados."
+    }
   }
 }

@@ -62,6 +62,15 @@ At `streak-landing/.env.local`:
 NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 SUPABASE_SERVICE_ROLE_KEY=sb_secret_...
+
+# Sprint 2.3 — reminders. In dev, leave DRY_RUN on and skip the real API keys.
+MANDRILL_API_KEY=md-placeholder
+MANDRILL_FROM_EMAIL=reminders@yourdomain.com
+MANDRILL_FROM_NAME=Streak
+MANDRILL_DRY_RUN=1
+CRON_SECRET=$(openssl rand -hex 32)
+UNSUB_TOKEN_SECRET=$(openssl rand -hex 32)
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
 Where to find each value in the Supabase dashboard:
@@ -70,9 +79,16 @@ Where to find each value in the Supabase dashboard:
 - **Publishable key** (`sb_publishable_...`): Project Settings → API Keys → "publishable" key
 - **Secret key** (`sb_secret_...`): Project Settings → API Keys → "secret" key *(treat like a password; don't paste in chats)*
 
+Mandrill setup (do this once before flipping `MANDRILL_DRY_RUN=0`):
+
+- Log in at https://mailchimp.com → click the 9-dot menu top-left → **Transactional** (this is Mandrill).
+- Settings → **SMTP & API Info** → generate a new API key. Paste it into `MANDRILL_API_KEY`.
+- Settings → **Sending Domains** → add your domain → copy the SPF + DKIM records into your DNS → click **Verify**. Both must show green before real sends will deliver.
+- Set `MANDRILL_FROM_EMAIL` to an address at that verified domain.
+
 ### 2.3 Apply the schema
 
-Supabase dashboard → SQL Editor → paste `supabase/migrations/0001_init.sql` → Run. Verify three tables exist (`profiles`, `habits`, `check_ins`) with RLS enabled on each. Then run `supabase/migrations/0002_locale.sql` to add `profiles.locale` (required for Sprint 2.2 i18n). Existing profiles are backfilled with `'en'` by the `default` clause.
+Supabase dashboard → SQL Editor → paste `supabase/migrations/0001_init.sql` → Run. Verify three tables exist (`profiles`, `habits`, `check_ins`) with RLS enabled on each. Then run `supabase/migrations/0002_locale.sql` to add `profiles.locale` (required for Sprint 2.2 i18n). Then run `supabase/migrations/0003_reminders.sql` (Sprint 2.3) to add `profiles.preferred_reminder_channel / quiet_hours_* / unsubscribed_at` and the `reminder_sends` table. Existing profiles are backfilled with the column defaults.
 
 ### 2.4 Configure auth
 
@@ -104,6 +120,9 @@ Expected routes:
 | `/app`                      | Today view (habits + check-ins) — **auth-gated**           |
 | `/app/habits/new`           | New-habit form — auth-gated                                |
 | `/app/habits/[id]/edit`     | Edit / archive / delete — auth-gated                       |
+| `/app/settings`             | Reminder channel + quiet hours — auth-gated                |
+| `/api/cron/reminders`       | Vercel Cron endpoint (auth via `CRON_SECRET` bearer)       |
+| `/r/unsub`                  | One-click unsubscribe (HMAC-signed token)                  |
 
 ---
 
@@ -259,6 +278,38 @@ Precedence: signed-in `profiles.locale` → `NEXT_LOCALE` cookie → `Accept-Lan
 - Heatmap month labels and weekday initials on the habit detail page.
 - Plural forms: `1 day` / `2 days` in en; `1 dia` / `2 dias` in pt-BR. Best-streak and total-check-in counts exercise these.
 - Free-tier error: create a 4th habit on the free plan — the error bar should render in the active locale.
+
+### 6.10 Reminders (dry-run smoke test)
+
+Prerequisites: migration `0003_reminders.sql` applied, `CRON_SECRET` and `UNSUB_TOKEN_SECRET` set in `.env.local`, `MANDRILL_DRY_RUN=1`.
+
+**Cron handler:**
+
+1. Start the dev server (`npm run dev`). In another terminal:
+   ```bash
+   curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/reminders
+   ```
+2. Expect `{"ok":true,"summary":{…}}`. The handler walks every eligible user × habit, decides per-row, and emits `[mandrill:dry-run]` logs in the dev server output instead of hitting the API.
+3. Unauthenticated calls return 401:
+   ```bash
+   curl http://localhost:3000/api/cron/reminders  # → 401
+   ```
+4. Hit the endpoint a second time immediately. The UNIQUE constraint on `reminder_sends (habit_id, local_date, channel)` means the second tick's summary shows `"already_sent"` in `skipped` — idempotency is working.
+
+**Settings page:**
+
+1. Sign in, visit `/app/settings`. Toggle between Email / Don't send — the form posts to the `updateReminderPrefs` Server Action. Confirm `profiles.preferred_reminder_channel` updates in Supabase.
+2. Set quiet hours to a window covering the current wall-clock time. Re-run the cron curl. The summary's `skipped.quiet_hours` count should increment and no new `reminder_sends` row is inserted.
+
+**Unsubscribe link:**
+
+1. Grab a user id from `auth.users`. In a Node REPL or a quick script:
+   ```js
+   import { createUnsubscribeToken } from "./lib/email/unsubscribe-token";
+   createUnsubscribeToken("<user-id>", process.env.UNSUB_TOKEN_SECRET);
+   ```
+2. Visit `http://localhost:3000/r/unsub?t=<token>`. You should see a plain-HTML "You're unsubscribed." confirmation. In Supabase: the profile now has `unsubscribed_at` set and `preferred_reminder_channel='none'`.
+3. A tampered token (mutate any character) returns 400.
 
 ---
 

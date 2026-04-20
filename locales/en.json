@@ -207,5 +207,21 @@
     "label": "Language",
     "en": "English",
     "pt-BR": "Português (BR)"
+  },
+  "settings": {
+    "title": "Settings",
+    "reminders": {
+      "heading": "Reminders",
+      "channelLabel": "How should we remind you?",
+      "channelEmail": "Email",
+      "channelNone": "Don't send reminders",
+      "quietHoursLabel": "Quiet hours",
+      "quietHoursHelp": "We won't send reminders during this window. Leave blank to disable.",
+      "quietStart": "Start",
+      "quietEnd": "End",
+      "save": "Save",
+      "saving": "Saving…",
+      "reEnableNote": "You previously unsubscribed. Saving with Email on will re-enable reminders."
+    }
   }
 }

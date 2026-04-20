@@ -101,12 +101,34 @@ Goal: users come back tomorrow.
 - [x] Non-goals locked in: no URL-based locale routing (`/en/app` vs `/pt-BR/app`); no auto-translate at build — every string is hand-translated
 
 ### Sprint 2.3 — Reminders (email MVP, bilingual)
+
+**Decision (2026-04-19):** one channel per user, not per habit. Rationale lives in `docs/MEMORY.md`. This sprint delivers the email adapter; WhatsApp is the second adapter behind the same interface in Sprint 2.4.
+
+- [x] Migration `0003_reminders.sql`: `preferred_reminder_channel`, `quiet_hours_start/end`, `unsubscribed_at` on `profiles`; new `reminder_sends` table (`habit_id`, `local_date`, `channel` UNIQUE for idempotency)
 - [ ] Mailchimp Transactional (Mandrill) account wired — API key in `.env.local` *(user task; see `memory/project_mailchimp.md`)*
-- [ ] `reminder_time` wired to a daily cron (Vercel Cron or Supabase Edge Function)
-- [ ] Email templates in **both** en and pt-BR: "Don't break your streak" / "Não quebre sua sequência"
-- [ ] Template language picked from `profiles.locale`
-- [ ] Unsubscribe link + quiet-hours setting on profile
-- [ ] Per-user timezone respected
+- [x] `lib/email/mandrill.ts` — thin REST client with a `DRY_RUN=1` guard so local testing never bills
+- [x] `lib/email/templates.ts` — en + pt-BR reminder templates (HTML + plaintext), language keyed off `profiles.locale`
+- [x] `lib/email/unsubscribe-token.ts` — HMAC-signed, long-lived unsub tokens keyed on `user_id`
+- [x] `lib/reminders/dispatch.ts` — pure selection logic (quiet hours, timezone, channel, already-sent, already-checked-in) with ≥10 tests
+- [x] `app/api/cron/reminders/route.ts` — CRON_SECRET-protected handler; dispatches one Mandrill send per eligible habit and records to `reminder_sends`
+- [x] `app/r/unsub/route.ts` — one-click unsubscribe from the email footer (HMAC token, no login required)
+- [x] `/app/settings` page + `ReminderSettings` component — channel picker, quiet-hours, unsubscribe toggle
+- [x] `vercel.json` cron schedule (`*/15 * * * *` to start — coarse enough for Hobby plan)
+- [x] Extend `locales/en.json` + `locales/pt-BR.json` with email subject/body strings + settings UI copy
+- [x] PLAYBOOK §6.10 — reminder smoke test (dry-run cron, verify `reminder_sends` row, eyeball template, unsubscribe round-trip)
+
+### Sprint 2.4 — WhatsApp reminders *(new — split out from 2.3)*
+
+**Why split:** Meta Business verification + template approval isn't on our timeline. Email unblocks immediately; WhatsApp lands behind the same dispatch interface when approval clears. Brazilian users are the primary driver (see `memory/project_brazilian_users.md`).
+
+- [ ] Migration: `phone_e164`, `whatsapp_opt_in` on `profiles`; extend `preferred_reminder_channel` CHECK to include `'whatsapp'`
+- [ ] Meta Business / WhatsApp BSP account — **user task** (Twilio is simplest for a solo dev; Zenvia is cheaper + BR-native but more paperwork)
+- [ ] Template approval for the reminder message (en + pt-BR) in Meta Business Manager
+- [ ] `lib/whatsapp/send.ts` — BSP client; same interface as `sendEmail`
+- [ ] Dispatch routing in `lib/reminders/dispatch.ts` picks adapter from `profiles.preferred_reminder_channel`
+- [ ] Phone number verification flow on `/app/settings` (OTP via WhatsApp)
+- [ ] STOP keyword handling → sets `whatsapp_opt_in = false`
+- [ ] PLAYBOOK update — WhatsApp smoke test
 
 ### Added observability *(entering user territory)*
 - [ ] Sentry wired (error boundaries + source maps)
@@ -198,16 +220,16 @@ Goal: stop hiding from the world.
 | ----- | ----- | ---------- |
 | 0     | 1     | 1          |
 | 1     | 3     | 4          |
-| 2     | 4     | 8          |
-| 3     | 3     | 11         |
-| 4     | 3     | 14         |
-| 5     | 2     | 16         |
-| 6     | 2     | 18         |
+| 2     | 5     | 9          |
+| 3     | 3     | 12         |
+| 4     | 3     | 15         |
+| 5     | 2     | 17         |
+| 6     | 2     | 19         |
 
-Phase 2 picked up a sprint (2.2 Localization) after real pt-BR users arrived.
+Phase 2 picked up two sprints after real pt-BR users arrived: **2.2** (localization) and **2.4** (WhatsApp reminders), reflecting the strategic weight of the Brazilian audience.
 
-**Public beta:** end of Phase 4 (~14 weeks)
-**Paid launch:** end of Phase 6 (~18 weeks)
+**Public beta:** end of Phase 4 (~15 weeks)
+**Paid launch:** end of Phase 6 (~19 weeks)
 
 These slip. Assume ×1.3.
 
